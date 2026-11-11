@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 import ipywidgets as widgets
-from IPython.display import display
+from IPython.display import Image, display
 
 _STYLE = {"description_width": "260px"}
 _LAYOUT = {"width": "760px"}
@@ -110,3 +110,23 @@ def message(text: str, warning: bool = False) -> None:
     """Show a short message (orange for a warning, as 1.20.8's ``bcolors.WARNING``)."""
     colour = "#b36b00" if warning else "#1b5e20"
     display(widgets.HTML(f"<span style='color:{colour}'>{text}</span>"))
+
+
+def show_figure(figure: object) -> None:
+    """Show a matplotlib figure as a PNG.
+
+    The package builds figures without pyplot (so nothing is shown twice), and Jupyter only renders those
+    when they are turned into an image; this works the same on Colab and in JupyterLab.
+    """
+    import io
+
+    buffer = io.BytesIO()
+    figure.savefig(buffer, format="png", dpi=90, bbox_inches="tight")  # type: ignore[attr-defined]
+    display(Image(buffer.getvalue()))
+
+
+def show_table(rows: list[dict[str, object]]) -> None:
+    """Show rows as a table (pandas' HTML table, numbers rounded to 3 decimals)."""
+    import pandas as pd
+
+    display(pd.DataFrame(rows).round(3))

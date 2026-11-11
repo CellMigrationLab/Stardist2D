@@ -2,15 +2,14 @@
 
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 from typing import Any
 
 import ipywidgets as widgets
 from IPython.display import display
 
-from stardist2d import bioimage, data, export, model, plotting, qc, report
-from stardist2d.notebook.forms import Field, Form, message
+from stardist2d import bioimage, data, model, plotting, qc, report
+from stardist2d.notebook.forms import Field, Form, message, show_figure, show_table
 from stardist2d.notebook.session import Session
 
 
@@ -41,7 +40,7 @@ def loss_curves(session: Session) -> Form:
         _ = values
         folder = _qc_folder(session)
         loss, val_loss = qc.read_training_evaluation(folder)
-        display(plotting.loss_curves(loss, val_loss, folder / qc.QC_FOLDER / "lossCurvePlots.png"))
+        show_figure(plotting.loss_curves(loss, val_loss, folder / qc.QC_FOLDER / "lossCurvePlots.png"))
 
     return Form("Plot of training errors vs. epoch number", [], run, "Show").show()
 
@@ -69,7 +68,7 @@ def _viewer(session: Session) -> None:
         )
         area.clear_output()
         with area:
-            display(figure)
+            show_figure(figure)
 
     choose.observe(lambda change: show(change["new"]), names="value")
     display(widgets.VBox([choose, area]))
@@ -88,7 +87,7 @@ def quality_control(session: Session) -> Form:
         )
         result = qc.run_quality_control(model.load_model_folder(folder), folder, session.qc_images, session.qc_masks)
         session.qc_rows = result.rows
-        export.print_table(result.rows, sys.stdout)
+        show_table(result.rows)
         _viewer(session)
         loss = folder / qc.QC_FOLDER / "lossCurvePlots.png"
         report.write_qc_report(folder, result.rows, loss, folder / qc.QC_FOLDER / "QC_example_data.png")

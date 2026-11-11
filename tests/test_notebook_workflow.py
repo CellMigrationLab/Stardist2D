@@ -1,22 +1,22 @@
 """The notebook's steps, driven as a person would (fill the form, click the button), on the shipped example data."""
 
+import contextlib
 from unittest import mock
 
 import pytest
 
 from stardist2d import notebook
+from stardist2d.notebook import evaluation_steps, forms, prediction_steps, setup_steps, training_steps
 
 pytestmark = pytest.mark.slow
 
 
 def test_the_whole_notebook_workflow_on_the_example_dataset(tmp_path):
-    with (
-        mock.patch("stardist2d.notebook.forms.display"),
-        mock.patch("stardist2d.notebook.training_steps.display"),
-        mock.patch("stardist2d.notebook.evaluation_steps.display"),
-        mock.patch("stardist2d.notebook.prediction_steps.display"),
-        mock.patch("stardist2d.notebook.setup_steps.display"),
-    ):
+    with contextlib.ExitStack() as stack:
+        for module in (forms, setup_steps, training_steps, evaluation_steps, prediction_steps):
+            for name in ("display", "show_figure", "show_table"):
+                if hasattr(module, name):
+                    stack.enter_context(mock.patch.object(module, name))
         session = notebook.Session(base_folder=tmp_path)
         steps = [
             (notebook.download_example_data, {"base_folder": str(tmp_path)}),

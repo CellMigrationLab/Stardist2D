@@ -4,10 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from IPython.display import display
-
 from stardist2d import batch, model, plotting, predict, prepare
-from stardist2d.notebook.forms import Field, Form, message
+from stardist2d.notebook.forms import Field, Form, message, show_figure
 from stardist2d.notebook.session import Session
 
 
@@ -26,7 +24,7 @@ def predictions(session: Session) -> Form:
             for name in outcome.skipped:
                 message(f"The stack {name} has already been processed: remove its result folder to redo it.", True)
             for name, counts in outcome.counts.items():
-                display(
+                show_figure(
                     plotting.objects_per_frame(
                         counts, results / f"{name.rsplit('.', 1)[0]}_Object_detected_vs_frame_number.png"
                     )
@@ -36,7 +34,7 @@ def predictions(session: Session) -> Form:
             image = prepare.normalize_image(outcome.last_image, prepare.prediction_axes(outcome.last_image))
             stem = outcome.counts[-1][0].rsplit(".", 1)[0]
             print("One example image is displayed below:")
-            display(plotting.overlay(image, outcome.last_labels, results / f"{stem}_overlay.tif"))
+            show_figure(plotting.overlay(image, outcome.last_labels, results / f"{stem}_overlay.tif"))
         message("Predictions completed")
 
     fields = [

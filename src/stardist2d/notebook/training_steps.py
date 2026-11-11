@@ -9,7 +9,7 @@ from typing import Any
 from IPython.display import display
 
 from stardist2d import config, data, environment, model, plotting, pretrained, report, train
-from stardist2d.notebook.forms import Field, Form, message
+from stardist2d.notebook.forms import Field, Form, message, show_figure
 from stardist2d.notebook.session import Session
 
 NOTEBOOK_VERSION = "1.0.0"
@@ -51,7 +51,7 @@ def training_parameters(session: Session) -> Form:
         if session.model_folder.exists():
             message(f"!! WARNING: {session.model_folder.name} already exists: tick the box in 4.1 to replace it", True)
         session.example_figure = session.base_folder / "TrainingDataExample_StarDist2D.png"
-        display(plotting.training_pair(image, labels, session.example_figure))
+        show_figure(plotting.training_pair(image, labels, session.example_figure))
         message("Parameters initiated.")
 
     fields = [
