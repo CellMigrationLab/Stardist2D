@@ -27,3 +27,4 @@ importlib-metadata==10.2.0
 pytest==9.1.1
 packaging==25.0
 ruff==0.17.3
+pyyaml==6.0.2

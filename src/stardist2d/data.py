@@ -6,6 +6,8 @@
 from __future__ import annotations
 
 import io
+import shutil
+import sys
 import zipfile
 from pathlib import Path
 
@@ -14,6 +16,9 @@ import numpy as np
 TEST_DATASET_URL = "https://zenodo.org/record/7949940/files/Stardist.zip?download=1"
 """The test dataset of section 3.1 (Zenodo record 7949940)."""
 IMAGE_PATTERN = "*.tif"
+EXAMPLE_FOLDER = Path("example_data") / "StarDist_2D"
+"""The small dataset shipped with the installer (a subset of Zenodo 7949940), relative to the app folder."""
+APP_FOLDER = "StarDist2D"
 
 
 def _existing_folder(folder: Path, role: str) -> Path:
@@ -91,3 +96,31 @@ def download_test_dataset(destination: Path, url: str = TEST_DATASET_URL, timeou
     with zipfile.ZipFile(io.BytesIO(response.content)) as archive:
         archive.extractall(destination)
     return destination
+
+
+def bundled_example_data() -> Path | None:
+    """Return the small example dataset shipped with this app, or ``None`` when it is not there.
+
+    Installed app: ``<install folder>/StarDist2D/example_data/StarDist_2D``. Repository checkout: the
+    ``example_data`` folder next to ``src``.
+    """
+    candidates = (
+        Path(sys.prefix) / APP_FOLDER / EXAMPLE_FOLDER,
+        Path(__file__).resolve().parents[2] / EXAMPLE_FOLDER,
+    )
+    return next((folder for folder in candidates if (folder / "Training - Images").is_dir()), None)
+
+
+def get_example_data(destination: Path, full: bool = False) -> Path:
+    """Put the example dataset in ``destination/Stardist`` and return that folder (section 3.1).
+
+    The small shipped copy is used unless *full* is asked or the app has none; the full Zenodo record
+    (45 training pairs) is then downloaded. Folder names are 1.20.8's (``Training - Images``, ...).
+    """
+    target = destination / "Stardist"
+    bundled = bundled_example_data()
+    if bundled is not None and not full:
+        shutil.copytree(bundled, target, dirs_exist_ok=True)
+        return target
+    download_test_dataset(destination)
+    return target

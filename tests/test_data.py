@@ -46,3 +46,26 @@ def test_a_missing_or_empty_folder_is_refused(tmp_path):
     (tmp_path / "empty").mkdir()
     with pytest.raises(FileNotFoundError, match="no .tif file"):
         data.image_files(tmp_path / "empty")
+
+
+def test_the_shipped_example_dataset_is_found_and_copied(tmp_path):
+    bundled = data.bundled_example_data()
+    assert bundled is not None and bundled.name == "StarDist_2D"
+    target = data.get_example_data(tmp_path)
+    assert target == tmp_path / "Stardist"
+    pairs = data.training_pairs(target / "Training - Images", target / "Training - Masks")
+    assert len(pairs) == 6
+    assert len(data.training_pairs(target / "Test - Images", target / "Test - Masks")) == 2
+    image = data.read_image(pairs[0][0])
+    assert image.shape == (1024, 1024) and image.dtype == np.uint16
+
+
+def test_the_installer_ships_every_example_file():
+    import yaml
+
+    bundled = data.bundled_example_data()
+    repository = bundled.parents[1]
+    construct = yaml.safe_load((repository / "construct.yaml").read_text())
+    shipped = {next(iter(item)) for item in construct["extra_files"]}
+    files = {path.relative_to(repository).as_posix() for path in bundled.rglob("*") if path.is_file()}
+    assert files and files <= shipped

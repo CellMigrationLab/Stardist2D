@@ -19,6 +19,24 @@ extra_files:
 - app/logo/stardist2d.png: StarDist2D/stardist2d.png
 - app/menuinst/Welcome.ipynb: StarDist2D/notebooks/Welcome.ipynb
 - app/menuinst/notebook_launcher.json: StarDist2D/notebook_launcher.json
+- example_data/StarDist_2D/README.md: StarDist2D/example_data/StarDist_2D/README.md
+- example_data/StarDist_2D/Test - Images/test_01.tif: StarDist2D/example_data/StarDist_2D/Test - Images/test_01.tif
+- example_data/StarDist_2D/Test - Images/test_02.tif: StarDist2D/example_data/StarDist_2D/Test - Images/test_02.tif
+- example_data/StarDist_2D/Test - Masks/test_01.tif: StarDist2D/example_data/StarDist_2D/Test - Masks/test_01.tif
+- example_data/StarDist_2D/Test - Masks/test_02.tif: StarDist2D/example_data/StarDist_2D/Test - Masks/test_02.tif
+- example_data/StarDist_2D/Training - Images/training_01.tif: StarDist2D/example_data/StarDist_2D/Training - Images/training_01.tif
+- example_data/StarDist_2D/Training - Images/training_02.tif: StarDist2D/example_data/StarDist_2D/Training - Images/training_02.tif
+- example_data/StarDist_2D/Training - Images/training_03.tif: StarDist2D/example_data/StarDist_2D/Training - Images/training_03.tif
+- example_data/StarDist_2D/Training - Images/training_04.tif: StarDist2D/example_data/StarDist_2D/Training - Images/training_04.tif
+- example_data/StarDist_2D/Training - Images/training_05.tif: StarDist2D/example_data/StarDist_2D/Training - Images/training_05.tif
+- example_data/StarDist_2D/Training - Images/training_06.tif: StarDist2D/example_data/StarDist_2D/Training - Images/training_06.tif
+- example_data/StarDist_2D/Training - Masks/training_01.tif: StarDist2D/example_data/StarDist_2D/Training - Masks/training_01.tif
+- example_data/StarDist_2D/Training - Masks/training_02.tif: StarDist2D/example_data/StarDist_2D/Training - Masks/training_02.tif
+- example_data/StarDist_2D/Training - Masks/training_03.tif: StarDist2D/example_data/StarDist_2D/Training - Masks/training_03.tif
+- example_data/StarDist_2D/Training - Masks/training_04.tif: StarDist2D/example_data/StarDist_2D/Training - Masks/training_04.tif
+- example_data/StarDist_2D/Training - Masks/training_05.tif: StarDist2D/example_data/StarDist_2D/Training - Masks/training_05.tif
+- example_data/StarDist_2D/Training - Masks/training_06.tif: StarDist2D/example_data/StarDist_2D/Training - Masks/training_06.tif
+- example_data/StarDist_2D/original_names.csv: StarDist2D/example_data/StarDist_2D/original_names.csv
 - app/python_scripts/hide_code_cells.py: StarDist2D/hide_code_cells.py
 - app/python_scripts/include_path.py: StarDist2D/include_path.py
 - app/python_scripts/launch_jupyter.py: StarDist2D/launch_jupyter.py
