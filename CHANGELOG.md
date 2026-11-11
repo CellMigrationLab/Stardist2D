@@ -21,6 +21,12 @@ Every intentional difference from 1.20.8 is listed here under **Differences from
 - `stardist2d.report` (training and QC PDFs from explicit inputs), `stardist2d.plotting` (the notebook's figures),
   `stardist2d.environment` (versions, GPU, CUDA without IPython magics), `stardist2d.provenance`
   (`stardist2d_run.json` beside every output) and a command line (`python -m stardist2d train|qc|predict`).
+- **The notebook** `notebooks/StarDist_2D/StarDist_2D_ZeroCostDL4Mic.ipynb`, built by `tools/build_notebook.py` from
+  the 1.20.8 notebook: every markdown cell kept word for word (plus "JupyterLab users" notes on Colab-only steps),
+  every code cell one call of `stardist2d.notebook`, which shows a form with 1.20.8's parameter names and defaults.
+  It runs locally (LabConstrictor, JupyterLab, ipywidgets 8) and on Colab (ipywidgets 7.7).
+- A small example dataset shipped with the installer (`example_data/`, from Zenodo 7949940) so section 3.1 works
+  offline; installer images from the StarDist logo.
 - Parity tests that run the code of the vendored 1.20.8 notebook (`tests/reference/`) and compare.
 
 ### Differences from ZeroCostDL4Mic 1.20.8
@@ -45,6 +51,8 @@ Every intentional difference from 1.20.8 is listed here under **Differences from
 - **Reports:** the Augmentor reference is no longer cited (the augmentation never used Augmentor); the GPU name
   comes from `nvidia-smi --query-gpu=name` (1.20.8 only recognised "Tesla" GPUs); a missing loss-curve figure no
   longer stops the QC report.
+- **Forms instead of Colab fields:** Colab `#@param` fields do not exist in JupyterLab; each cell shows the same
+  fields as widgets and a Run button. Section 6.2 needs equal block_size_Y and block_size_X.
 - **QC table:** images are listed in sorted order (1.20.8 used the folder's listing order). Values are unchanged.
 
 ### Removed

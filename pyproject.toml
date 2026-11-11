@@ -42,7 +42,7 @@ max-args = 8
 max-statements = 50
 
 [tool.ruff.lint.isort]
-known-first-party = ["stardist2d", "stardist2d_lc_tools", "code_rules", "check", "reference_notebook"]
+known-first-party = ["stardist2d", "stardist2d_lc_tools", "code_rules", "check", "reference_notebook", "build_notebook"]
 # Spec §9: annotations come with postponed evaluation (I002 enforces it).
 required-imports = ["from __future__ import annotations"]
 
@@ -88,6 +88,13 @@ baseline = "tools/code_rules_baseline.json"
 "stardist2d.keras_backend" = "orchestration"
 "stardist2d.metrics" = "pure"
 "stardist2d.model" = "orchestration"
+"stardist2d.notebook" = "ui"
+"stardist2d.notebook.evaluation_steps" = "ui"
+"stardist2d.notebook.forms" = "ui"
+"stardist2d.notebook.prediction_steps" = "ui"
+"stardist2d.notebook.session" = "ui"
+"stardist2d.notebook.setup_steps" = "ui"
+"stardist2d.notebook.training_steps" = "ui"
 "stardist2d.plotting" = "ui"
 "stardist2d.predict" = "orchestration"
 "stardist2d.prepare" = "pure"

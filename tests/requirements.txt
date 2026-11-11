@@ -25,6 +25,10 @@ bioimageio.core==0.5.11
 # stardist[bioimageio] needs it for the BioImage Model Zoo export; missing from ZeroCostDL4Mic 1.20.8's requirements
 importlib-metadata==10.2.0
 pytest==9.1.1
+ipywidgets==8.1.7
+ipykernel==6.29.5
+nbclient==0.10.2
+nbformat==5.10.4
 packaging==25.0
 ruff==0.17.3
 pyyaml==6.0.2
