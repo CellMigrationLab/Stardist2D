@@ -25,3 +25,12 @@ The run uses the example dataset shipped with the app (section 3.1, offline copy
 To run it again: start JupyterLab on port 8899 in a folder holding the notebook (with `src/` on `PYTHONPATH`, the
 notebook setting `windowingMode` set to `none` so every cell is rendered), copy the pretrained model folder to
 `~/StarDist2D/pretrained/2D_versatile_fluo`, then `OUT=<folder> node run_notebook.js`.
+
+## napari (LabConstrictor-napari plugin)
+
+`napari/napari_01_form.png` and `napari/napari_02_result.png`: napari 0.10.0 with the napari-labconstrictor plugin
+(from the LabConstrictor-napari repository) in its own environment. The StarDist2D app is registered exactly as the
+installer does (`labconstrictor_tools register ... --app-manifest labconstrictor-app.yaml`, app Python = the
+StarDist2D environment). "StarDist 2D: Segment nuclei (fluorescence)" on the example test image with
+`2D_versatile_fluo`: a Labels layer, a Shapes layer (284 outlines) and the per-object table, in 5 s on the CPU.
+Run by `napari/run_napari.py <folder with v312/ (app env) and napari/ (host env)>` under `xvfb-run`.
