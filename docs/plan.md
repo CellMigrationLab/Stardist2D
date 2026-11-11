@@ -132,3 +132,10 @@ Names reserved by other bricks: the real `RESERVED_NAMES` list (`code_rules.py:2
 - **Training** stays in the notebook and CLI only for v1.
 - **Repository:** `CellMigrationLab/StarDist2D`, with package `stardist2d` and bridge module `stardist2d_lc_tools`.
 - **Next:** P0 + P1 in the new repository, once it is created and added to the session.
+
+## 6. Open scientific question found during P1
+
+1.20.8 normalises multi-channel (e.g. H&E) images **per channel** for training (cell 28, `axis_norm=(0,1)`) but
+**jointly** for quality control and prediction (cells 36, 41, `axis_norm=(0,1,2)`). The port keeps both as they are
+(`stardist2d.prepare.training_axes` / `prediction_axes`) because changing either changes results. To decide with
+the ZeroCostDL4Mic maintainers before v1.0.0.

@@ -53,6 +53,8 @@ required-imports = ["from __future__ import annotations"]
 # Parity with ZeroCostDL4Mic 1.20.8: the augmenter draws from NumPy's global generator, as StarDist's training
 # expects (it calls augmenter(x, y) with no generator), so np.random.seed makes runs repeatable.
 "src/stardist2d/augment.py" = ["NPY002"]
+# 1.20.8 seeds the global generator (16) for StarDist's random label colours; plotting restores the state after.
+"src/stardist2d/plotting.py" = ["NPY002"]
 "tests/parity/test_augment_parity.py" = ["NPY002"]
 
 [tool.pytest.ini_options]
@@ -74,17 +76,23 @@ baseline = "tools/code_rules_baseline.json"
 # pure: no I/O, no UI; io: reads or writes files; ui: notebook and command line, no
 # computing; orchestration: ties the others together.
 "stardist2d" = "orchestration"
+"stardist2d.__main__" = "ui"
 "stardist2d.augment" = "pure"
 "stardist2d.batch" = "orchestration"
 "stardist2d.bioimage" = "orchestration"
+"stardist2d.cli" = "ui"
 "stardist2d.config" = "pure"
 "stardist2d.data" = "io"
+"stardist2d.environment" = "io"
 "stardist2d.export" = "io"
 "stardist2d.keras_backend" = "orchestration"
 "stardist2d.metrics" = "pure"
 "stardist2d.model" = "orchestration"
+"stardist2d.plotting" = "ui"
 "stardist2d.predict" = "orchestration"
 "stardist2d.prepare" = "pure"
 "stardist2d.pretrained" = "io"
+"stardist2d.provenance" = "io"
 "stardist2d.qc" = "orchestration"
+"stardist2d.report" = "io"
 "stardist2d.train" = "orchestration"

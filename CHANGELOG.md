@@ -18,6 +18,9 @@ Every intentional difference from 1.20.8 is listed here under **Differences from
   1.20.8's (labels, ImageJ ROI zips, centre and count CSVs; tested against the original cell).
 - `stardist2d.batch` (stacks, big images), `stardist2d.pretrained` (section 3.4), `stardist2d.train` (sections 4.1,
   4.2, with a per-epoch callback), `stardist2d.qc` (section 5) and `stardist2d.bioimage` (section 5.3).
+- `stardist2d.report` (training and QC PDFs from explicit inputs), `stardist2d.plotting` (the notebook's figures),
+  `stardist2d.environment` (versions, GPU, CUDA without IPython magics), `stardist2d.provenance`
+  (`stardist2d_run.json` beside every output) and a command line (`python -m stardist2d train|qc|predict`).
 - Parity tests that run the code of the vendored 1.20.8 notebook (`tests/reference/`) and compare.
 
 ### Differences from ZeroCostDL4Mic 1.20.8
@@ -39,6 +42,9 @@ Every intentional difference from 1.20.8 is listed here under **Differences from
   randomly chosen image).
 - **Stack labels** are written as integers (1.20.8 converted them to 32-bit float), and the stack ROI zip comes from
   the same prediction as the labels (1.20.8 predicted every frame twice, the second time without normalisation).
+- **Reports:** the Augmentor reference is no longer cited (the augmentation never used Augmentor); the GPU name
+  comes from `nvidia-smi --query-gpu=name` (1.20.8 only recognised "Tesla" GPUs); a missing loss-curve figure no
+  longer stops the QC report.
 - **QC table:** images are listed in sorted order (1.20.8 used the folder's listing order). Values are unchanged.
 
 ### Removed
