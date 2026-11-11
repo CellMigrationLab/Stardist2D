@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=https://labconstrictor.cellmig.org/schema/labconstrictor-app.schema.json
+schema: 1
+name: StarDist2D
+summary: Train and run Stardist2D
+kind: analysis
+hosts:
+- notebook
+distribution:
+  installer: true

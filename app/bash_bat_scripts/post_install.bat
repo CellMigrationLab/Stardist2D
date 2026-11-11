@@ -3,7 +3,7 @@ SETLOCAL EnableExtensions DisableDelayedExpansion
 
 SET "LOG_FILE=%PREFIX%\menuinst_debug.log"
 SET "PYTHON_EXE=%PREFIX%\python.exe"
-SET "PROJECT_ROOT=%PREFIX%\PROJECT_NAME"
+SET "PROJECT_ROOT=%PREFIX%\StarDist2D"
 SET "BASE_REQUIREMENTS=%PROJECT_ROOT%\requirements.txt"
 SET "GPU_REQUIREMENTS=%PROJECT_ROOT%\requirements_gpu.txt"
 SET "SELECTED_REQUIREMENTS=%BASE_REQUIREMENTS%"
@@ -93,10 +93,10 @@ REM External Python code is optional in LabConstrictor projects. If setup.py is
 REM bundled, install it without a temporary build environment and verify that
 REM the generated import package is usable. Otherwise continue without it.
 IF EXIST "%PROJECT_ROOT%\setup.py" (
-    echo Found setup.py, installing PROJECT_NAME package locally without build isolation. >> "%LOG_FILE%"
+    echo Found setup.py, installing StarDist2D package locally without build isolation. >> "%LOG_FILE%"
     "%PYTHON_EXE%" -m pip install --no-deps --no-build-isolation "%PROJECT_ROOT%" >> "%LOG_FILE%" 2>&1
     IF ERRORLEVEL 1 (
-        SET "FAILURE_MESSAGE=PROJECT_NAME package installation failed."
+        SET "FAILURE_MESSAGE=StarDist2D package installation failed."
         GOTO :fail
     )
 
@@ -104,9 +104,9 @@ IF EXIST "%PROJECT_ROOT%\setup.py" (
     REM so labconstrictor-tools is installed BEFORE the import check below. A failed install is only a WARNING, see :install_lc_tools at the end of this file.
     CALL :install_lc_tools
 
-    "%PYTHON_EXE%" -c "import PYTHON_PROJ_NAME; print('PROJECT_NAME import successful:', PYTHON_PROJ_NAME.__file__)" >> "%LOG_FILE%" 2>&1
+    "%PYTHON_EXE%" -c "import PYTHON_PROJ_NAME; print('StarDist2D import successful:', PYTHON_PROJ_NAME.__file__)" >> "%LOG_FILE%" 2>&1
     IF ERRORLEVEL 1 (
-        SET "FAILURE_MESSAGE=Installed PROJECT_NAME package could not be imported as PYTHON_PROJ_NAME."
+        SET "FAILURE_MESSAGE=Installed StarDist2D package could not be imported as PYTHON_PROJ_NAME."
         GOTO :fail
     )
 ) ELSE (
@@ -130,15 +130,15 @@ SET "LC_APP_MANIFEST="
 IF EXIST "%PROJECT_ROOT%\labconstrictor-app.yaml" SET "LC_APP_MANIFEST=%PROJECT_ROOT%\labconstrictor-app.yaml"
 "%PYTHON_EXE%" -c "import importlib.util, sys; sys.exit(0 if importlib.util.find_spec('PYTHON_PROJ_NAME_lc_tools') else 1)" >> "%LOG_FILE%" 2>&1
 IF NOT ERRORLEVEL 1 (
-    echo Found PYTHON_PROJ_NAME_lc_tools: registering the tools of PROJECT_NAME for Napari and Fiji. >> "%LOG_FILE%"
+    echo Found PYTHON_PROJ_NAME_lc_tools: registering the tools of StarDist2D for Napari and Fiji. >> "%LOG_FILE%"
     REM Which hosts list the app (the sentence is the one Tools uses for an app without hosts). Logged before the READY check, which sets the errorlevel.
-    IF NOT DEFINED LC_APP_MANIFEST echo WARNING: labconstrictor-app.yaml was not found in "%PROJECT_ROOT%" ^(add it to extra_files in construct.yaml^), so PROJECT_NAME is registered without hosts. 'PROJECT_NAME' declares no hosts, so it is listed in every host; register it with --app-manifest ^(or --hosts^) to choose >> "%LOG_FILE%"
+    IF NOT DEFINED LC_APP_MANIFEST echo WARNING: labconstrictor-app.yaml was not found in "%PROJECT_ROOT%" ^(add it to extra_files in construct.yaml^), so StarDist2D is registered without hosts. 'StarDist2D' declares no hosts, so it is listed in every host; register it with --app-manifest ^(or --hosts^) to choose >> "%LOG_FILE%"
     IF DEFINED LC_APP_MANIFEST echo Passing the hosts of "%LC_APP_MANIFEST%" to Tools ^(--app-manifest^); Tools logs the same sentence if the file declares no hosts. >> "%LOG_FILE%"
     REM labconstrictor-tools was installed before the import check (:install_lc_tools): register only if that worked (errorlevel 1 otherwise).
     "%PYTHON_EXE%" -c "import sys; sys.exit(0 if sys.argv[1] == '1' else 1)" "%LC_TOOLS_READY%" >> "%LOG_FILE%" 2>&1
-    IF NOT ERRORLEVEL 1 IF DEFINED LC_APP_MANIFEST "%PYTHON_EXE%" -m labconstrictor_tools register --name "PROJECT_NAME" --prefix "%PREFIX%" --module PYTHON_PROJ_NAME_lc_tools --version "%LC_APP_VERSION%" --display-name "PROJECT_NAME" --app-manifest "%LC_APP_MANIFEST%" >> "%LOG_FILE%" 2>&1
-    IF NOT ERRORLEVEL 1 IF NOT DEFINED LC_APP_MANIFEST "%PYTHON_EXE%" -m labconstrictor_tools register --name "PROJECT_NAME" --prefix "%PREFIX%" --module PYTHON_PROJ_NAME_lc_tools --version "%LC_APP_VERSION%" --display-name "PROJECT_NAME" >> "%LOG_FILE%" 2>&1
-    IF ERRORLEVEL 1 echo WARNING: tool registration failed - see the pip and register output above in this file; PROJECT_NAME itself is installed. >> "%LOG_FILE%"
+    IF NOT ERRORLEVEL 1 IF DEFINED LC_APP_MANIFEST "%PYTHON_EXE%" -m labconstrictor_tools register --name "StarDist2D" --prefix "%PREFIX%" --module PYTHON_PROJ_NAME_lc_tools --version "%LC_APP_VERSION%" --display-name "StarDist2D" --app-manifest "%LC_APP_MANIFEST%" >> "%LOG_FILE%" 2>&1
+    IF NOT ERRORLEVEL 1 IF NOT DEFINED LC_APP_MANIFEST "%PYTHON_EXE%" -m labconstrictor_tools register --name "StarDist2D" --prefix "%PREFIX%" --module PYTHON_PROJ_NAME_lc_tools --version "%LC_APP_VERSION%" --display-name "StarDist2D" >> "%LOG_FILE%" 2>&1
+    IF ERRORLEVEL 1 echo WARNING: tool registration failed - see the pip and register output above in this file; StarDist2D itself is installed. >> "%LOG_FILE%"
 )
 
 "%PYTHON_EXE%" "%PROJECT_ROOT%\include_path.py" --path "%PREFIX%" --files "%PROJECT_ROOT%\notebook_launcher.json" --keyword "BASE_PATH_KEYWORD" >> "%LOG_FILE%" 2>&1
@@ -176,19 +176,19 @@ IF ERRORLEVEL 1 (
     GOTO :fail
 )
 
-"%PYTHON_EXE%" -c "from menuinst.api import install; import os; print(install(os.path.join(r'%PREFIX%', 'PROJECT_NAME', 'notebook_launcher.json')))" >> "%LOG_FILE%" 2>&1
+"%PYTHON_EXE%" -c "from menuinst.api import install; import os; print(install(os.path.join(r'%PREFIX%', 'StarDist2D', 'notebook_launcher.json')))" >> "%LOG_FILE%" 2>&1
 IF ERRORLEVEL 1 (
     SET "FAILURE_MESSAGE=Application shortcut creation failed."
     GOTO :fail
 )
 
-SET "ARP_KEY=HKCU\Software\Microsoft\Windows\CurrentVersion\Uninstall\UNDERSCORED_PROJECT_NAME"
-SET "UNINSTALL_EXE=%PREFIX%\Uninstall-UNDERSCORED_PROJECT_NAME.exe"
+SET "ARP_KEY=HKCU\Software\Microsoft\Windows\CurrentVersion\Uninstall\StarDist2D"
+SET "UNINSTALL_EXE=%PREFIX%\Uninstall-StarDist2D.exe"
 SET "DISPLAY_ICON=%PROJECT_ROOT%\logo.ico"
-SET "DISPLAY_VERSION=VERSION_NUMBER"
-SET "PUBLISHER=GITHUB_OWNER"
-echo Registering PROJECT_NAME in Windows Apps list >> "%LOG_FILE%"
-reg add "%ARP_KEY%" /v DisplayName /d "PROJECT_NAME" /f >> "%LOG_FILE%" 2>&1
+SET "DISPLAY_VERSION=1.0.0"
+SET "PUBLISHER=CellMigrationLab"
+echo Registering StarDist2D in Windows Apps list >> "%LOG_FILE%"
+reg add "%ARP_KEY%" /v DisplayName /d "StarDist2D" /f >> "%LOG_FILE%" 2>&1
 reg add "%ARP_KEY%" /v DisplayVersion /d "%DISPLAY_VERSION%" /f >> "%LOG_FILE%" 2>&1
 reg add "%ARP_KEY%" /v Publisher /d "%PUBLISHER%" /f >> "%LOG_FILE%" 2>&1
 reg add "%ARP_KEY%" /v InstallLocation /d "%PREFIX%" /f >> "%LOG_FILE%" 2>&1
@@ -240,11 +240,11 @@ IF NOT DEFINED LC_TOOLS_SPEC SET "LC_TOOLS_SPEC=https://github.com/CellMigration
 SET "LC_TOOLS_READY=0"
 "%PYTHON_EXE%" -c "import importlib.util, sys; sys.exit(0 if importlib.util.find_spec('PYTHON_PROJ_NAME_lc_tools') else 1)" >> "%LOG_FILE%" 2>&1
 IF ERRORLEVEL 1 GOTO :EOF
-echo Found PYTHON_PROJ_NAME_lc_tools: installing labconstrictor-tools before the import check of PROJECT_NAME. >> "%LOG_FILE%"
+echo Found PYTHON_PROJ_NAME_lc_tools: installing labconstrictor-tools before the import check of StarDist2D. >> "%LOG_FILE%"
 REM LC_TOOLS_SPEC goes to pip as one argument through Python: cmd.exe never re-parses it (a quote or & in it cannot run anything).
 "%PYTHON_EXE%" -c "import os, subprocess, sys; sys.exit(subprocess.call([sys.executable, '-m', 'pip', 'install', os.environ['LC_TOOLS_SPEC']]))" >> "%LOG_FILE%" 2>&1
 IF ERRORLEVEL 1 (
-    echo WARNING: labconstrictor-tools could not be installed - see the pip output above in this file; the tools of PROJECT_NAME will not be registered ^(the import check fails only if the package needs labconstrictor-tools at import time^). >> "%LOG_FILE%"
+    echo WARNING: labconstrictor-tools could not be installed - see the pip output above in this file; the tools of StarDist2D will not be registered ^(the import check fails only if the package needs labconstrictor-tools at import time^). >> "%LOG_FILE%"
     GOTO :EOF
 )
 SET "LC_TOOLS_READY=1"
