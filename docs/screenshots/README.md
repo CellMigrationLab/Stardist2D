@@ -43,3 +43,15 @@ registered as the installer does. Plugins > LabConstrictor > StarDist2D > "StarD
 (fluorescence)" on the example test image: **PASS in 36 s**. Fiji got a 16-bit label image (1024×1024), 284 ROIs in
 the ROI Manager and overlay, the `stardist_objects` results table (284 rows) and progress per tile
 (`fiji/report_excerpt.json`). The screenshots are the two dialogs the harness answered.
+
+## QuPath (LabConstrictor-QuPath extension)
+
+`qupath/`: QuPath 0.7.0 (checksum-verified release) with the LabConstrictor-QuPath extension built from its repository
+(JDK 25), on a virtual screen, through the extension's own runner (`tests/run_gui_test.sh`) with the test body
+`qupath/gui_test_stardist2d_body.groovy`. The example test image opened in a QuPath project, "StarDist 2D: Segment
+nuclei (fluorescence)" with `2D_versatile_fluo`: **6/6 checks pass, done in 5.5 s**. 284 outlines arrive as annotations
+carrying `label` and `prob` measurements. In the viewer screenshot the annotation names are hidden (View > Show names
+off); with names on, QuPath draws `StarDist2D:stardist_outlines N` over every nucleus.
+
+Seen while doing this (LabConstrictor-QuPath, not this app): the tool dialog shows the group headings and ⓘ icons but
+not the parameter names beside the fields (`qupath/qp_stardist_2_dialog_after.png`).
