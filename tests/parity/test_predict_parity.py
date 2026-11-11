@@ -89,11 +89,13 @@ def test_single_image_outputs_match_1_20_8(tmp_path, images, pretrained_folder):
 
     for name in ("first", "second"):
         np.testing.assert_array_equal(tifffile.imread(ours / f"{name}.tif"), tifffile.imread(reference / f"{name}.tif"))
-        assert (ours / f"{name}_Nuclei_centre.csv").read_text() == (reference / f"{name}_Nuclei_centre.csv").read_text()
+        assert (ours / f"{name}_Nuclei_centre.csv").read_bytes() == (
+            reference / f"{name}_Nuclei_centre.csv"
+        ).read_bytes()
         with zipfile.ZipFile(ours / f"{name}.zip") as a, zipfile.ZipFile(reference / f"{name}.zip") as b:
             assert a.namelist() == b.namelist()
             assert all(a.read(entry) == b.read(entry) for entry in a.namelist())
-    assert (ours / "Nuclei_count.csv").read_text() == (reference / "Nuclei_count.csv").read_text()
+    assert (ours / "Nuclei_count.csv").read_bytes() == (reference / "Nuclei_count.csv").read_bytes()
     assert result.counts[0][1] > 10
 
 

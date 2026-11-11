@@ -61,6 +61,7 @@ def test_qc_table_matches_1_20_8(tmp_path):
     ours = export.write_qc_table(tmp_path / "ours.csv", rows)
     our_rows = {row[0]: row for row in csv.reader(ours.read_text().splitlines())}
     assert our_rows == reference_rows
+    assert ours.read_bytes().count(b"\r\n") == reference.read_bytes().count(b"\r\n")  # same line endings
 
 
 def test_identical_masks_give_perfect_scores():

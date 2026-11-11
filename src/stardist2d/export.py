@@ -33,12 +33,16 @@ def _atomic_write(path: Path, write: Callable[[Path], None]) -> Path:
     return path
 
 
-def _write_csv(path: Path, rows: Iterable[Sequence[Any]]) -> Path:
-    """Write *rows* as CSV (``csv`` module defaults, as 1.20.8)."""
+def _write_csv(path: Path, rows: Iterable[Sequence[Any]], line_end: str = "\r\n") -> Path:
+    """Write *rows* as CSV with *line_end* after each row.
+
+    1.20.8 writes the QC table with the ``csv`` module (CR LF) and the prediction tables with pandas
+    (LF); each writer below keeps the line ending of the file it replaces.
+    """
 
     def write(temporary: Path) -> None:
         with temporary.open("w", newline="", encoding="utf-8") as handle:
-            writer = csv.writer(handle)
+            writer = csv.writer(handle, lineterminator=line_end)
             writer.writerows(rows)
 
     return _atomic_write(path, write)
@@ -71,12 +75,12 @@ def write_imagej_rois(path: Path, polygons: np.ndarray | Sequence[np.ndarray]) -
 
 def write_centres(path: Path, points: np.ndarray) -> Path:
     """Write object centres (``details['points']``, rows of ``(y, x)``) as ``<name>_Nuclei_centre.csv``."""
-    return _write_csv(path, [("Y", "X"), *(tuple(point) for point in np.asarray(points).tolist())])
+    return _write_csv(path, [("Y", "X"), *(tuple(point) for point in np.asarray(points).tolist())], "\n")
 
 
 def write_counts(path: Path, counts: Iterable[tuple[str, int]]) -> Path:
     """Write ``(name, number of objects)`` rows without a header, as 1.20.8's ``Nuclei_count.csv``."""
-    return _write_csv(path, counts)
+    return _write_csv(path, counts, "\n")
 
 
 def write_qc_table(path: Path, rows: Iterable[dict[str, Any]]) -> Path:
