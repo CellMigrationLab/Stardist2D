@@ -25,6 +25,8 @@ bioimageio.core==0.5.11
 # stardist[bioimageio] needs it for the BioImage Model Zoo export; missing from ZeroCostDL4Mic 1.20.8's requirements
 importlib-metadata==10.2.0
 pytest==9.1.1
+# The tools bridge, at the tag the LabConstrictor installer pins (post_install LC_TOOLS_PIN)
+labconstrictor-tools @ https://github.com/CellMigrationLab/LabConstrictor-Tools/archive/refs/tags/v0.3.0-alpha.1.zip
 ipywidgets==8.1.7
 ipykernel==6.29.5
 nbclient==0.10.2

@@ -1,0 +1,133 @@
+[
+ {
+  "tool": "segment_fluorescence",
+  "inputs": {
+   "image": "fixtures/nuclei.tif"
+  },
+  "expect": {
+   "results": {
+    "stardist_labels": {
+     "shape": [
+      384,
+      384
+     ],
+     "dtype": "uint16"
+    },
+    "stardist_objects": {
+     "columns": [
+      "label",
+      "centroid_y",
+      "centroid_x",
+      "area_px",
+      "probability"
+     ]
+    }
+   },
+   "max_seconds": 300,
+   "progress_events_min": 1
+  }
+ },
+ {
+  "tool": "segment_rgb",
+  "inputs": {
+   "image": "fixtures/he.tif"
+  },
+  "expect": {
+   "results": {
+    "stardist_labels": {
+     "shape": [
+      300,
+      384
+     ],
+     "dtype": "uint16"
+    }
+   },
+   "max_seconds": 300
+  }
+ },
+ {
+  "tool": "segment_rgb",
+  "inputs": {
+   "image": "fixtures/nuclei.tif"
+  },
+  "expect": {
+   "status": "FAILED",
+   "code": "wrong_dimensions"
+  }
+ },
+ {
+  "tool": "segment_fluorescence",
+  "inputs": {
+   "image": "fixtures/nuclei.tif",
+   "prob_thresh": 0.99
+  },
+  "expect": {
+   "status": "FAILED",
+   "code": "no_match",
+   "message_contains": "No object found"
+  }
+ },
+ {
+  "tool": "segment_fluorescence",
+  "inputs": {
+   "image": "fixtures/empty.tif"
+  },
+  "expect": {
+   "status": "FAILED",
+   "code": "no_match"
+  }
+ },
+ {
+  "tool": "segment_fluorescence",
+  "inputs": {
+   "image": "fixtures/nuclei.tif",
+   "model": "Custom model folder"
+  },
+  "expect": {
+   "status": "FAILED",
+   "code": "invalid_parameter",
+   "message_contains": "folder of your StarDist 2D model"
+  }
+ },
+ {
+  "tool": "segment_folder",
+  "inputs": {
+   "input_folder": "fixtures/folder",
+   "output_folder": "fixtures/folder"
+  },
+  "expect": {
+   "status": "FAILED",
+   "code": "invalid_parameter",
+   "message_contains": "other than the input folder"
+  }
+ },
+ {
+  "tool": "quality_control",
+  "inputs": {
+   "image": "fixtures/nuclei.tif",
+   "ground_truth": "fixtures/nuclei_mask.tif"
+  },
+  "expect": {
+   "results": {
+    "prediction": {
+     "shape": [
+      384,
+      384
+     ],
+     "dtype": "uint16"
+    },
+    "qc_metrics": {
+     "rows": 1
+    }
+   },
+   "max_seconds": 300
+  }
+ },
+ {
+  "tool": "check_installation",
+  "inputs": {},
+  "expect": {
+   "max_seconds": 120
+  }
+ }
+]

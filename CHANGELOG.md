@@ -27,6 +27,12 @@ Every intentional difference from 1.20.8 is listed here under **Differences from
   It runs locally (LabConstrictor, JupyterLab, ipywidgets 8) and on Colab (ipywidgets 7.7).
 - A small example dataset shipped with the installer (`example_data/`, from Zenodo 7949940) so section 3.1 works
   offline; installer images from the StarDist logo.
+- **Fiji, napari and QuPath tools** (`src/stardist2d_lc_tools`, LabConstrictor-Tools bridge): Segment nuclei
+  (fluorescence, with channel choice and region runs), Segment nuclei (H&E / RGB), Segment a folder, Quality control,
+  Check this installation. Outputs: 16-bit labels, StarDist's own outlines (ROI Manager / Shapes / annotations) with
+  label and probability, a per-object table. Prediction runs tile by tile with progress and Cancel; loaded models are
+  cached. `labconstrictor-app.yaml` lists the app in the notebook, napari, Fiji and QuPath.
+- `lc_tests/cases.json`: the tools' test cases (`labconstrictor-tools test`), also run by pytest with a Cancel test.
 - Parity tests that run the code of the vendored 1.20.8 notebook (`tests/reference/`) and compare.
 
 ### Differences from ZeroCostDL4Mic 1.20.8
