@@ -46,7 +46,7 @@ def extract_project_folder(extra_files: list) -> str:
                     if parts:
                         return parts[0]
     # Fallback
-    return "PROJECT_NAME"
+    return "StarDist2D"
 
 def ensure_requirements_in_extra_files(construct_data: dict):
     extra_files = construct_data.get("extra_files")
@@ -59,7 +59,7 @@ def ensure_requirements_in_extra_files(construct_data: dict):
         isinstance(item, dict) and "requirements.txt" in item for item in extra_files
     )
     if not requirements_included:
-        extra_files.append({"requirements.txt": "PROJECT_NAME/requirements.txt"})
+        extra_files.append({"requirements.txt": "StarDist2D/requirements.txt"})
         debug("Added mapping for requirements.txt")
     else:
         debug("requirements.txt mapping already present")
@@ -68,7 +68,7 @@ def ensure_requirements_in_extra_files(construct_data: dict):
         isinstance(item, dict) and "requirements_gpu.txt" in item for item in extra_files
     )
     if not gpu_requirements_included and Path("requirements_gpu.txt").exists():
-        extra_files.append({"requirements_gpu.txt": "PROJECT_NAME/requirements_gpu.txt"})
+        extra_files.append({"requirements_gpu.txt": "StarDist2D/requirements_gpu.txt"})
         debug("Added mapping for requirements_gpu.txt")
     elif Path("requirements_gpu.txt").exists():
         debug("requirements_gpu.txt mapping already present")
@@ -81,7 +81,7 @@ def ensure_requirements_in_extra_files(construct_data: dict):
             isinstance(item, dict) and "requirements-linux.txt" in item for item in extra_files
         )
         if not linux_included:
-            extra_files.append({"requirements-linux.txt": "PROJECT_NAME/requirements-linux.txt"})
+            extra_files.append({"requirements-linux.txt": "StarDist2D/requirements-linux.txt"})
             debug("Added mapping for requirements-linux.txt")
         else:
             debug("requirements-linux.txt mapping already present")
@@ -93,7 +93,7 @@ def ensure_requirements_in_extra_files(construct_data: dict):
             isinstance(item, dict) and "requirements-windows.txt" in item for item in extra_files
         )
         if not windows_included:
-            extra_files.append({"requirements-windows.txt": "PROJECT_NAME/requirements-windows.txt"})
+            extra_files.append({"requirements-windows.txt": "StarDist2D/requirements-windows.txt"})
             debug("Added mapping for requirements-windows.txt")
         else:
             debug("requirements-windows.txt mapping already present")
@@ -106,7 +106,7 @@ def ensure_requirements_in_extra_files(construct_data: dict):
             isinstance(item, dict) and "requirements-macos.txt" in item for item in extra_files
         )
         if not macos_included:
-            extra_files.append({"requirements-macos.txt": "PROJECT_NAME/requirements-macos.txt"})
+            extra_files.append({"requirements-macos.txt": "StarDist2D/requirements-macos.txt"})
             debug("Added mapping for requirements-macos.txt")
         else:
             debug("requirements-macos.txt mapping already present")
@@ -218,7 +218,7 @@ def ensure_extra_files(construct_data: dict, notebooks_root: Path, src_root: Pat
 
     # First get the name of the package from setup.py
     setup_path = repo_root / "setup.py"
-    project_name = "PROJECT_NAME"
+    project_name = "StarDist2D"
     if setup_path.exists():
         setup_text = setup_path.read_text(encoding="utf-8")
         name_match = re.search(r'name\s*=\s*["\']([^"\']+)["\']', setup_text)

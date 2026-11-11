@@ -1,4 +1,4 @@
-name: LOWER_PROJ_NAME
+name: stardist2d
 channels:
   - conda-forge
   - bioconda
