@@ -34,3 +34,12 @@ installer does (`labconstrictor_tools register ... --app-manifest labconstrictor
 StarDist2D environment). "StarDist 2D: Segment nuclei (fluorescence)" on the example test image with
 `2D_versatile_fluo`: a Labels layer, a Shapes layer (284 outlines) and the per-object table, in 5 s on the CPU.
 Run by `napari/run_napari.py <folder with v312/ (app env) and napari/ (host env)>` under `xvfb-run`.
+
+## Fiji (LabConstrictor-Fiji plugin)
+
+`fiji/`: Fiji (fiji-latest-linux64-jdk, downloaded 2026-11-11) on a virtual screen, driven by LabConstrictor-Fiji's
+own harness (`tests/run_cases.py --real-apps` with the case `fiji/stardist2d_segment.json`), the StarDist2D app
+registered as the installer does. Plugins > LabConstrictor > StarDist2D > "StarDist 2D: Segment nuclei
+(fluorescence)" on the example test image: **PASS in 36 s**. Fiji got a 16-bit label image (1024×1024), 284 ROIs in
+the ROI Manager and overlay, the `stardist_objects` results table (284 rows) and progress per tile
+(`fiji/report_excerpt.json`). The screenshots are the two dialogs the harness answered.
