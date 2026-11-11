@@ -38,9 +38,10 @@ jobs:
         run: python tools/check.py --rules
 
   pytest:
-    # Fast tests: no TensorFlow (tests marked `slow` need it and run in their own job once the
-    # package code arrives).
+    # Every test, with the app's pinned scientific stack (TensorFlow on CPU). Tests marked `slow`
+    # run here too: nothing may be skipped in CI.
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -50,8 +51,14 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install the test tools
-        run: python -m pip install "pytest==9.1.1" "packaging==25.0" "ruff==0.17.3"
+      - name: Install the pinned stack and the test tools
+        run: python -m pip install -r tests/requirements.txt
 
-      - name: Run tests
-        run: python -m pytest -q -m "not slow"
+      - name: Run tests (no skips allowed)
+        run: |
+          set -o pipefail
+          python -m pytest -q -rs | tee pytest.log
+          if grep -Eq '[0-9]+ skipped' pytest.log; then
+            echo "::error title=Skipped tests::every test must run in CI (see the skip reasons above)"
+            exit 1
+          fi

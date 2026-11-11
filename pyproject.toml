@@ -6,7 +6,8 @@ line-length = 120
 target-version = "py312"
 src = ["src", "tests", "tools"]
 # Template files (synced from LabConstrictor, never hand-edited here) and the deliberately bad guard fixtures.
-extend-exclude = ["tests/guard_fixtures", ".tools", ".template_sync", "app"]
+# tests/reference holds the upstream ZeroCostDL4Mic notebook, byte for byte.
+extend-exclude = ["tests/guard_fixtures", "tests/reference", ".tools", ".template_sync", "app"]
 
 [tool.ruff.lint]
 # The MorphoBricks code standards (design v0.4 §9), as in CellPatcher and morphobricks-preprocessing.
@@ -41,7 +42,7 @@ max-args = 8
 max-statements = 50
 
 [tool.ruff.lint.isort]
-known-first-party = ["stardist2d", "stardist2d_lc_tools", "code_rules", "check"]
+known-first-party = ["stardist2d", "stardist2d_lc_tools", "code_rules", "check", "reference_notebook"]
 # Spec §9: annotations come with postponed evaluation (I002 enforces it).
 required-imports = ["from __future__ import annotations"]
 
@@ -49,12 +50,16 @@ required-imports = ["from __future__ import annotations"]
 # Tests are exempt from the annotation and docstring rules (as in CellPatcher).
 "tests/**" = ["D", "ANN", "I002"]
 "notebooks/**" = ["I002"]  # notebook cells are not modules
+# Parity with ZeroCostDL4Mic 1.20.8: the augmenter draws from NumPy's global generator, as StarDist's training
+# expects (it calls augmenter(x, y) with no generator), so np.random.seed makes runs repeatable.
+"src/stardist2d/augment.py" = ["NPY002"]
+"tests/parity/test_augment_parity.py" = ["NPY002"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 # The package is imported from src/ without installing it (setup.py is rendered by the template);
 # tools/ holds check.py and the shared code_rules.py that tests/test_code_rules.py imports.
-pythonpath = ["src", "tools"]
+pythonpath = ["src", "tools", "tests"]
 markers = [
     "slow: needs TensorFlow and StarDist (runs in the slow CI job; never deleted or weakened)",
 ]
@@ -69,4 +74,8 @@ baseline = "tools/code_rules_baseline.json"
 # pure: no I/O, no UI; io: reads or writes files; ui: notebook and command line, no
 # computing; orchestration: ties the others together.
 "stardist2d" = "orchestration"
+"stardist2d.augment" = "pure"
+"stardist2d.config" = "pure"
+"stardist2d.export" = "io"
 "stardist2d.keras_backend" = "orchestration"
+"stardist2d.metrics" = "pure"
