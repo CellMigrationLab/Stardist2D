@@ -3,6 +3,10 @@ version: 1.0.0
 environment_file: environment.yaml
 installer_type: all
 license_file: LICENSE
+
+welcome_image: app/logo/stardist2d_banner.png
+header_image: app/logo/stardist2d_header.png
+icon_image: app/logo/stardist2d.png
 conclusion_text: Thank you! You have successfully installed StarDist2D 1.0.0.
 keep_pkgs: false
 register_python: false
@@ -10,6 +14,9 @@ initialize_conda: false
 extra_files:
 - app/bash_bat_scripts/pre_uninstall.sh: pre_uninstall.sh
 - app/bash_bat_scripts/uninstall.sh: uninstall.sh
+- app/logo/stardist2d.icns: StarDist2D/stardist2d.icns
+- app/logo/stardist2d.ico: StarDist2D/stardist2d.ico
+- app/logo/stardist2d.png: StarDist2D/stardist2d.png
 - app/menuinst/Welcome.ipynb: StarDist2D/notebooks/Welcome.ipynb
 - app/menuinst/notebook_launcher.json: StarDist2D/notebook_launcher.json
 - app/python_scripts/hide_code_cells.py: StarDist2D/hide_code_cells.py
