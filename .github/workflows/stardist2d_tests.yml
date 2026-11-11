@@ -1,0 +1,57 @@
+name: StarDist2D tests
+
+# StarDist2D's own CI. This file is not part of the LabConstrictor template: the template's
+# .template_sync migrations write only the files they name, so a template sync leaves it alone.
+# The template's own tests.yml runs only in the template repository; this file has another name
+# so that the two never meet (as CellPatcher's cellpatcher_tests.yml).
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stardist2d-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rules:
+    # The MorphoBricks code standards (design v0.4 §9): the shared code rules and Ruff, against
+    # their shrink-only baseline (tools/code_rules_baseline.json, empty).
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Ruff
+        run: python -m pip install "ruff==0.17.3"
+
+      - name: Code rules
+        run: python tools/check.py --rules
+
+  pytest:
+    # Fast tests: no TensorFlow (tests marked `slow` need it and run in their own job once the
+    # package code arrives).
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+
+      - name: Install the test tools
+        run: python -m pip install "pytest==9.1.1" "packaging==25.0" "ruff==0.17.3"
+
+      - name: Run tests
+        run: python -m pytest -q -m "not slow"

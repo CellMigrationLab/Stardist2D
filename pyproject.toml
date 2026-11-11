@@ -1,0 +1,72 @@
+# Tool settings only: the package is built from setup.py (LabConstrictor template; no [build-system]
+# table, so pip keeps using setuptools and the installer's `pip install --no-deps` is unchanged).
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+src = ["src", "tests", "tools"]
+# Template files (synced from LabConstrictor, never hand-edited here) and the deliberately bad guard fixtures.
+extend-exclude = ["tests/guard_fixtures", ".tools", ".template_sync", "app"]
+
+[tool.ruff.lint]
+# The MorphoBricks code standards (design v0.4 §9), as in CellPatcher and morphobricks-preprocessing.
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # import sorting
+    "B",   # bugbear: likely bugs
+    "UP",  # modern syntax for the target Python
+    "NPY", # numpy-specific checks
+    "D",   # docstrings
+    "C90", # complexity (spec §9: at most 15)
+    "PLR0913", # at most 8 parameters
+    "PLR0915", # at most 50 statements
+    "ANN", # complete annotations
+    "PGH004", # a noqa names its rules, so the noqa ratchet sees every one
+]
+ignore = [
+    "D105", # magic methods need no docstring
+    "D107", # __init__ is documented on the class
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.lint.mccabe]
+max-complexity = 15
+
+[tool.ruff.lint.pylint]
+max-args = 8
+max-statements = 50
+
+[tool.ruff.lint.isort]
+known-first-party = ["stardist2d", "stardist2d_lc_tools", "code_rules", "check"]
+# Spec §9: annotations come with postponed evaluation (I002 enforces it).
+required-imports = ["from __future__ import annotations"]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests are exempt from the annotation and docstring rules (as in CellPatcher).
+"tests/**" = ["D", "ANN", "I002"]
+"notebooks/**" = ["I002"]  # notebook cells are not modules
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# The package is imported from src/ without installing it (setup.py is rendered by the template);
+# tools/ holds check.py and the shared code_rules.py that tests/test_code_rules.py imports.
+pythonpath = ["src", "tools"]
+markers = [
+    "slow: needs TensorFlow and StarDist (runs in the slow CI job; never deleted or weakened)",
+]
+
+[tool.morphobricks.code-rules]
+# The shared tools/code_rules.py (spec §9), configured for this repository.
+owner = "stardist2d"
+package = "src/stardist2d"
+baseline = "tools/code_rules_baseline.json"
+
+[tool.morphobricks.code-rules.layers]
+# pure: no I/O, no UI; io: reads or writes files; ui: notebook and command line, no
+# computing; orchestration: ties the others together.
+"stardist2d" = "orchestration"
+"stardist2d.keras_backend" = "orchestration"
