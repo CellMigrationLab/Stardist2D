@@ -41,9 +41,16 @@ def test_qc_table_matches_1_20_8(tmp_path):
 
     folders, pairs = _dataset(tmp_path)
     namespace = {
-        "QC_model_path": str(tmp_path / "model"), "QC_model_name": "qc", "Source_QC_folder": str(folders["images"]),
-        "Target_QC_folder": str(folders["masks"]), "imread": tifffile.imread, "matching": matching, "np": np,
-        "csv": csv, "os": os, "print": lambda *args, **kwargs: None,
+        "QC_model_path": str(tmp_path / "model"),
+        "QC_model_name": "qc",
+        "Source_QC_folder": str(folders["images"]),
+        "Target_QC_folder": str(folders["masks"]),
+        "imread": tifffile.imread,
+        "matching": matching,
+        "np": np,
+        "csv": csv,
+        "os": os,
+        "print": lambda *args, **kwargs: None,
     }
     run(36, lambda code: code.startswith("with open("), namespace)
     reference = tmp_path / "model/qc/Quality Control/Quality_Control for qc.csv"

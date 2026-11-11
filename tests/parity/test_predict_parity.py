@@ -48,12 +48,24 @@ def _reference(tmp_path, images, pretrained_folder):
 
     results = tmp_path / "reference"
     namespace = {
-        "Data_type": 1, "Data_folder": str(images), "Results_folder": str(results), "np": np, "os": os, "pd": pd,
-        "glob": __import__("glob").glob, "imread": tifffile.imread, "imwrite": tifffile.imwrite,
-        "normalize": normalize, "StarDist2D": StarDist2D, "export_imagej_rois": export_imagej_rois,
-        "random_label_cmap": random_label_cmap, "Prediction_model_name": pretrained_folder.name,
-        "Prediction_model_path": str(pretrained_folder.parent), "sys": __import__("sys"),
-        "print": lambda *args, **kwargs: None, "plt": _NoPlot(),
+        "Data_type": 1,
+        "Data_folder": str(images),
+        "Results_folder": str(results),
+        "np": np,
+        "os": os,
+        "pd": pd,
+        "glob": __import__("glob").glob,
+        "imread": tifffile.imread,
+        "imwrite": tifffile.imwrite,
+        "normalize": normalize,
+        "StarDist2D": StarDist2D,
+        "export_imagej_rois": export_imagej_rois,
+        "random_label_cmap": random_label_cmap,
+        "Prediction_model_name": pretrained_folder.name,
+        "Prediction_model_path": str(pretrained_folder.parent),
+        "sys": __import__("sys"),
+        "print": lambda *args, **kwargs: None,
+        "plt": _NoPlot(),
     }
     results.mkdir()
     cwd = os.getcwd()

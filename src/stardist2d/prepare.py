@@ -71,9 +71,7 @@ def fill_holes(labels: np.ndarray) -> np.ndarray:
     return fill_label_holes(labels)
 
 
-def split_training_data(
-    images: Sequence[np.ndarray], labels: Sequence[np.ndarray], n_validation: int
-) -> TrainingSplit:
+def split_training_data(images: Sequence[np.ndarray], labels: Sequence[np.ndarray], n_validation: int) -> TrainingSplit:
     """Return the images split as 1.20.8 does: a ``RandomState(42)`` permutation, last *n_validation* for validation.
 
     Raises

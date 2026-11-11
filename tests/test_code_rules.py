@@ -111,9 +111,7 @@ def test_layers():
         "pure_with_io.py: pure module calls open()",
     ]
     assert layer_problems(*guard("pure_with_io.py"), "io") == []
-    assert layer_problems(*guard("ui_computing.py"), "ui") == [
-        "ui_computing.py: UI module imports scipy"
-    ]
+    assert layer_problems(*guard("ui_computing.py"), "ui") == ["ui_computing.py: UI module imports scipy"]
     assert "no layer declared" in layer_problems(*guard("ui_computing.py"), None)[0]
 
 
@@ -137,13 +135,9 @@ def test_the_baseline_only_shrinks():
     moved = ["a.py: 700 lines (max 600)", "a.py:40 f: 70 executable lines (max 60)"]
     assert compare_with_baseline(moved, noqa, recorded) == []
     grown = ["a.py: 710 lines (max 600)", problems[1]]
-    assert compare_with_baseline(grown, noqa, recorded) == [
-        "grew from 700 to 710: a.py: # lines (max #)"
-    ]
+    assert compare_with_baseline(grown, noqa, recorded) == ["grew from 700 to 710: a.py: # lines (max #)"]
     new = [*problems, "b.py:3 g: 9 parameters (max 8)"]
-    assert compare_with_baseline(new, noqa, recorded) == [
-        "new violation: b.py g: # parameters (max #)"
-    ]
+    assert compare_with_baseline(new, noqa, recorded) == ["new violation: b.py g: # parameters (max #)"]
     smaller = ["a.py: 650 lines (max 600)"]
     found = compare_with_baseline(smaller, noqa, recorded)
     assert len(found) == 2 and all("baseline can shrink" in f for f in found)

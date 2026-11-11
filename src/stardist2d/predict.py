@@ -147,8 +147,14 @@ def predict_big(
     zarr.save_array(str(workdir / "image.zarr"), image)
     stored = zarr.open(str(workdir / "image.zarr"), mode="r")
     return model.predict_instances_big(
-        stored, axes=axes, block_size=blocks, min_overlap=overlap, context=None,
-        normalizer=normalizer, show_progress=False, n_tiles=tiles,
+        stored,
+        axes=axes,
+        block_size=blocks,
+        min_overlap=overlap,
+        context=None,
+        normalizer=normalizer,
+        show_progress=False,
+        n_tiles=tiles,
     )
 
 

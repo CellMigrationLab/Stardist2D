@@ -51,10 +51,11 @@ def write_labels(path: Path, labels: np.ndarray) -> Path:
     return _atomic_write(path, lambda temporary: tifffile.imwrite(temporary, labels))
 
 
-def write_imagej_rois(path: Path, polygons: np.ndarray) -> Path:
+def write_imagej_rois(path: Path, polygons: np.ndarray | Sequence[np.ndarray]) -> Path:
     """Write StarDist polygons (``details['coord']``, shape ``(n, 2, n_rays)``) as an ImageJ ROI zip.
 
-    *path* ends in ``.zip``. The ROIs are those of 1.20.8 (``stardist.export_imagej_rois``).
+    *path* ends in ``.zip``. The ROIs are those of 1.20.8 (``stardist.export_imagej_rois``). A list of
+    polygon arrays (one per frame of a stack) gives each frame's ROIs that frame as position.
     """
     from stardist import export_imagej_rois
 

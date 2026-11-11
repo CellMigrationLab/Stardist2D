@@ -9,8 +9,17 @@ from reference_notebook import run
 from stardist2d import prepare
 from stardist2d.config import validation_count
 
-STARTS = ("X = [normalize", "Y = [fill_label_holes", "rng =", "ind =", "n_val =", "ind_train, ind_val", "X_val, Y_val",
-          "X_trn, Y_trn", "if n_channel == 4")
+STARTS = (
+    "X = [normalize",
+    "Y = [fill_label_holes",
+    "rng =",
+    "ind =",
+    "n_val =",
+    "ind_train, ind_val",
+    "X_val, Y_val",
+    "X_trn, Y_trn",
+    "if n_channel == 4",
+)
 
 
 def _data(n: int, channels: int):
@@ -30,17 +39,30 @@ def _data(n: int, channels: int):
 @pytest.mark.parametrize(("n", "channels", "percentage"), [(5, 1, 10), (8, 3, 25), (4, 4, 50)])
 def test_preparation_and_split_match_1_20_8(n, channels, percentage):
     images, labels = _data(n, channels)
-    namespace = {"X": list(images), "Y": list(labels), "normalize": normalize, "fill_label_holes": fill_label_holes,
-                 "tqdm": lambda items: items, "np": np, "percentage": percentage / 100, "axis_norm": (0, 1),
-                 "n_channel": channels, "print": lambda *args, **kwargs: None}
+    namespace = {
+        "X": list(images),
+        "Y": list(labels),
+        "normalize": normalize,
+        "fill_label_holes": fill_label_holes,
+        "tqdm": lambda items: items,
+        "np": np,
+        "percentage": percentage / 100,
+        "axis_norm": (0, 1),
+        "n_channel": channels,
+        "print": lambda *args, **kwargs: None,
+    }
     run(28, lambda code: code.startswith(STARTS), namespace)
 
     x = prepare.drop_alpha(images)
     x = [prepare.normalize_image(image, prepare.training_axes(image)) for image in x]
     y = [prepare.fill_holes(label) for label in labels]
     split = prepare.split_training_data(x, y, validation_count(percentage, n))
-    for ours, theirs in [(split.x_train, "X_trn"), (split.y_train, "Y_trn"), (split.x_val, "X_val"),
-                         (split.y_val, "Y_val")]:
+    for ours, theirs in [
+        (split.x_train, "X_trn"),
+        (split.y_train, "Y_trn"),
+        (split.x_val, "X_val"),
+        (split.y_val, "Y_val"),
+    ]:
         assert len(ours) == len(namespace[theirs])
         for a, b in zip(ours, namespace[theirs], strict=True):
             np.testing.assert_array_equal(a, b)

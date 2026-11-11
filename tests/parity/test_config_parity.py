@@ -34,8 +34,14 @@ def reference_patch_size(use_defaults: bool, patch_size: int, shape: tuple[int, 
 
 @pytest.mark.parametrize(
     ("use_defaults", "patch", "shape"),
-    [(True, 512, (256, 256)), (True, 512, (3000, 4000)), (False, 512, (600, 700)), (False, 256, (1024, 1024)),
-     (False, 128, (100, 300)), (True, 0, (64, 80))],
+    [
+        (True, 512, (256, 256)),
+        (True, 512, (3000, 4000)),
+        (False, 512, (600, 700)),
+        (False, 256, (1024, 1024)),
+        (False, 128, (100, 300)),
+        (True, 0, (64, 80)),
+    ],
 )
 def test_patch_sizes_that_are_multiples_of_16_match_1_20_8(use_defaults, patch, shape):
     expected = reference_patch_size(use_defaults, patch, shape)
@@ -59,9 +65,15 @@ def test_images_smaller_than_16_pixels_are_refused():
 
 def reference_steps(use_defaults, steps, augmentation, factor, shape, patch, n_images, batch):
     namespace = {
-        "Use_Default_Advanced_Parameters": use_defaults, "number_of_steps": steps, "Image_X": shape[1],
-        "Image_Y": shape[0], "patch_size": patch, "X": [None] * n_images, "batch_size": batch,
-        "Use_Data_augmentation": augmentation, "Multiply_dataset_by": factor,
+        "Use_Default_Advanced_Parameters": use_defaults,
+        "number_of_steps": steps,
+        "Image_X": shape[1],
+        "Image_Y": shape[0],
+        "patch_size": patch,
+        "X": [None] * n_images,
+        "batch_size": batch,
+        "Use_Data_augmentation": augmentation,
+        "Multiply_dataset_by": factor,
     }
     run(28, lambda code: code.startswith("if (Use_Default_Advanced_Parameters) or"), namespace)
     return namespace["number_of_steps"]
@@ -69,8 +81,12 @@ def reference_steps(use_defaults, steps, augmentation, factor, shape, patch, n_i
 
 @pytest.mark.parametrize(
     ("use_defaults", "steps", "augmentation", "factor", "shape", "patch", "n_images", "batch"),
-    [(True, 50, True, 4, (512, 512), 512, 10, 2), (True, 50, False, 4, (1024, 768), 256, 7, 2),
-     (False, 0, True, 3, (512, 512), 128, 5, 4), (False, 30, True, 4, (512, 512), 128, 5, 4)],
+    [
+        (True, 50, True, 4, (512, 512), 512, 10, 2),
+        (True, 50, False, 4, (1024, 768), 256, 7, 2),
+        (False, 0, True, 3, (512, 512), 128, 5, 4),
+        (False, 30, True, 4, (512, 512), 128, 5, 4),
+    ],
 )
 def test_number_of_steps_matches_1_20_8(use_defaults, steps, augmentation, factor, shape, patch, n_images, batch):
     expected = reference_steps(use_defaults, steps, augmentation, factor, shape, patch, n_images, batch)
@@ -100,8 +116,15 @@ def test_defaults_replace_the_advanced_parameters():
 
 def test_config2d_arguments_are_those_of_cell_28():
     args = config2d_arguments(TrainingSettings(), n_channel=3, patch_size=256)
-    assert args == {"n_rays": 32, "use_gpu": False, "train_batch_size": 2, "n_channel_in": 3,
-                    "train_patch_size": (256, 256), "grid": (2, 2), "train_learning_rate": 0.0003}
+    assert args == {
+        "n_rays": 32,
+        "use_gpu": False,
+        "train_batch_size": 2,
+        "n_channel_in": 3,
+        "train_patch_size": (256, 256),
+        "grid": (2, 2),
+        "train_learning_rate": 0.0003,
+    }
 
 
 def test_invalid_settings_are_refused_with_a_reason():
