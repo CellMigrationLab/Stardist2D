@@ -1,36 +1,25 @@
-name: UNDERSCORED_PROJECT_NAME
-version: VERSION_NUMBER
-
+name: StarDist2D
+version: 1.0.0
 environment_file: environment.yaml
 installer_type: all
 license_file: LICENSE
-
-welcome_image: WELCOME_IMAGE
-header_image: HEADER_IMAGE
-icon_image: ICON_IMAGE
-
-conclusion_text: 'Thank you! You have successfully installed PROJECT_NAME VERSION_NUMBER.'
-
+conclusion_text: Thank you! You have successfully installed StarDist2D 1.0.0.
 keep_pkgs: false
 register_python: false
 initialize_conda: false
-
 extra_files:
 - app/bash_bat_scripts/pre_uninstall.sh: pre_uninstall.sh
 - app/bash_bat_scripts/uninstall.sh: uninstall.sh
-- app/menuinst/Welcome.ipynb: PROJECT_NAME/notebooks/Welcome.ipynb
-- app/menuinst/notebook_launcher.json: PROJECT_NAME/notebook_launcher.json
-- app/python_scripts/hide_code_cells.py: PROJECT_NAME/hide_code_cells.py
-- app/python_scripts/include_path.py: PROJECT_NAME/include_path.py
-- app/python_scripts/launch_jupyter.py: PROJECT_NAME/launch_jupyter.py
-- notebooks/notebook_latest_versions.yaml: PROJECT_NAME/notebook_latest_versions.yaml
-- requirements.txt: PROJECT_NAME/requirements.txt
-- requirements_gpu.txt: PROJECT_NAME/requirements_gpu.txt
-- construct.yaml: PROJECT_NAME/construct.yaml
-
+- app/menuinst/Welcome.ipynb: StarDist2D/notebooks/Welcome.ipynb
+- app/menuinst/notebook_launcher.json: StarDist2D/notebook_launcher.json
+- app/python_scripts/hide_code_cells.py: StarDist2D/hide_code_cells.py
+- app/python_scripts/include_path.py: StarDist2D/include_path.py
+- app/python_scripts/launch_jupyter.py: StarDist2D/launch_jupyter.py
+- construct.yaml: StarDist2D/construct.yaml
+- notebooks/notebook_latest_versions.yaml: StarDist2D/notebook_latest_versions.yaml
+- requirements.txt: StarDist2D/requirements.txt
+- requirements_gpu.txt: StarDist2D/requirements_gpu.txt
 post_install: app/bash_bat_scripts/post_install.bat # [win]
 post_install: app/bash_bat_scripts/post_install.sh # [unix]
-
 pre_uninstall: app/bash_bat_scripts/pre_uninstall.bat # [win]
 pre_uninstall: app/bash_bat_scripts/pre_uninstall.sh # [unix]
-

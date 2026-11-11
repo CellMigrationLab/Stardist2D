@@ -3,7 +3,7 @@ set -euo pipefail
 
 LOG_FILE="$PREFIX/menuinst_debug.log"
 PYTHON_EXE="$PREFIX/bin/python"
-PROJECT_ROOT="$PREFIX/PROJECT_NAME"
+PROJECT_ROOT="$PREFIX/StarDist2D"
 BASE_REQUIREMENTS="$PROJECT_ROOT/requirements.txt"
 GPU_REQUIREMENTS="$PROJECT_ROOT/requirements_gpu.txt"
 SELECTED_REQUIREMENTS="$BASE_REQUIREMENTS"
@@ -69,7 +69,7 @@ fi
 # External Python code is optional. Verify the generated package only when the
 # constructor bundled setup.py and src/.
 if [ -f "$PROJECT_ROOT/setup.py" ]; then
-    echo "Found setup.py, installing PROJECT_NAME package locally without build isolation" >> "$LOG_FILE"
+    echo "Found setup.py, installing StarDist2D package locally without build isolation" >> "$LOG_FILE"
     "$PYTHON_EXE" -m pip install --no-deps --no-build-isolation "$PROJECT_ROOT" >> "$LOG_FILE" 2>&1
     # Tools first, only for an app whose package ships a <package>_lc_tools module: the app package may import labconstrictor_tools
     # at module level, so labconstrictor-tools must be installed BEFORE the import check below. A failed install is only a WARNING
@@ -80,14 +80,14 @@ if [ -f "$PROJECT_ROOT/setup.py" ]; then
     LC_TOOLS_MODULE="PYTHON_PROJ_NAME_lc_tools"
     LC_TOOLS_READY=0
     if "$PYTHON_EXE" -c "import importlib.util, sys; sys.exit(0 if importlib.util.find_spec('$LC_TOOLS_MODULE') else 1)" >> "$LOG_FILE" 2>&1; then
-        echo "Found $LC_TOOLS_MODULE: installing labconstrictor-tools before the import check of PROJECT_NAME" >> "$LOG_FILE" || :
+        echo "Found $LC_TOOLS_MODULE: installing labconstrictor-tools before the import check of StarDist2D" >> "$LOG_FILE" || :
         if "$PYTHON_EXE" -m pip install "${LC_TOOLS_SPEC:-https://github.com/CellMigrationLab/LabConstrictor-Tools/archive/refs/tags/${LC_TOOLS_PIN}.zip}" >> "$LOG_FILE" 2>&1; then
             LC_TOOLS_READY=1
         else
-            echo "WARNING: labconstrictor-tools could not be installed - see the pip output above in this file; the tools of PROJECT_NAME will not be registered (the import check below fails only if the package needs labconstrictor-tools at import time)." >> "$LOG_FILE" || :
+            echo "WARNING: labconstrictor-tools could not be installed - see the pip output above in this file; the tools of StarDist2D will not be registered (the import check below fails only if the package needs labconstrictor-tools at import time)." >> "$LOG_FILE" || :
         fi
     fi
-    "$PYTHON_EXE" -c "import PYTHON_PROJ_NAME; print('PROJECT_NAME import successful:', PYTHON_PROJ_NAME.__file__)" >> "$LOG_FILE" 2>&1
+    "$PYTHON_EXE" -c "import PYTHON_PROJ_NAME; print('StarDist2D import successful:', PYTHON_PROJ_NAME.__file__)" >> "$LOG_FILE" 2>&1
 else
     echo "No setup.py detected; this project does not bundle an optional Python package." >> "$LOG_FILE"
 fi
@@ -99,7 +99,7 @@ fi
 # labconstrictor-tools is installed above, before the import check of the package (LC_TOOLS_PIN, LC_TOOLS_MODULE and LC_TOOLS_READY are set there).
 if [ -f "$PROJECT_ROOT/setup.py" ] && "$PYTHON_EXE" -c "import importlib.util, sys; sys.exit(0 if importlib.util.find_spec('$LC_TOOLS_MODULE') else 1)" >> "$LOG_FILE" 2>&1; then
     lc_note() { echo "$*" >> "$LOG_FILE" || :; }  # a full or unwritable log must not fail the installation
-    lc_note "Found $LC_TOOLS_MODULE: registering the tools of PROJECT_NAME for Napari and Fiji"
+    lc_note "Found $LC_TOOLS_MODULE: registering the tools of StarDist2D for Napari and Fiji"
     LC_APP_VERSION="$(sed -n 's/^version: *//p' "$PROJECT_ROOT/construct.yaml" 2>/dev/null | head -1 | tr -d "\"'\r" || true)"
     if [ -z "$LC_APP_VERSION" ]; then
         lc_note "WARNING: no version: line at the start of a line in construct.yaml - registering the tools with version 0."
@@ -111,19 +111,19 @@ if [ -f "$PROJECT_ROOT/setup.py" ] && "$PYTHON_EXE" -c "import importlib.util, s
     # without a hosts: line (or with an invalid one) is answered by Tools, whose message goes to this log.
     LC_APP_MANIFEST="$PROJECT_ROOT/labconstrictor-app.yaml"
     LC_HOSTS_ARGS=()
-    LC_NO_HOSTS="'PROJECT_NAME' declares no hosts, so it is listed in every host; register it with --app-manifest (or --hosts) to choose"
+    LC_NO_HOSTS="'StarDist2D' declares no hosts, so it is listed in every host; register it with --app-manifest (or --hosts) to choose"
     if [ ! -f "$LC_APP_MANIFEST" ]; then
-        lc_note "WARNING: $LC_APP_MANIFEST was not found (add labconstrictor-app.yaml to extra_files in construct.yaml), so PROJECT_NAME is registered without hosts. $LC_NO_HOSTS"
+        lc_note "WARNING: $LC_APP_MANIFEST was not found (add labconstrictor-app.yaml to extra_files in construct.yaml), so StarDist2D is registered without hosts. $LC_NO_HOSTS"
     else
         LC_HOSTS_ARGS=(--app-manifest "$LC_APP_MANIFEST")
         lc_note "Passing the hosts of $LC_APP_MANIFEST to Tools (--app-manifest); Tools logs the same sentence if the file declares no hosts."
     fi
     if [ "${LC_TOOLS_READY:-0}" = 1 ] \
-        && "$PYTHON_EXE" -m labconstrictor_tools register --name "PROJECT_NAME" --prefix "$PREFIX" \
-            --module "$LC_TOOLS_MODULE" --version "$LC_APP_VERSION" --display-name "PROJECT_NAME" ${LC_HOSTS_ARGS[@]+"${LC_HOSTS_ARGS[@]}"} >> "$LOG_FILE" 2>&1; then
+        && "$PYTHON_EXE" -m labconstrictor_tools register --name "StarDist2D" --prefix "$PREFIX" \
+            --module "$LC_TOOLS_MODULE" --version "$LC_APP_VERSION" --display-name "StarDist2D" ${LC_HOSTS_ARGS[@]+"${LC_HOSTS_ARGS[@]}"} >> "$LOG_FILE" 2>&1; then
         lc_note "Tools registered (labconstrictor-tools list shows them)."
     else
-        lc_note "WARNING: tool registration failed - see the pip and register output above in this file; PROJECT_NAME itself is installed."
+        lc_note "WARNING: tool registration failed - see the pip and register output above in this file; StarDist2D itself is installed."
     fi
 fi
 
@@ -143,7 +143,7 @@ fi
 echo "Launcher preflight completed successfully." >> "$LOG_FILE"
 
 "$PYTHON_EXE" -c "import os, sys; print('Python:', sys.executable); print('Prefix:', os.environ.get('PREFIX'))" >> "$LOG_FILE" 2>&1
-"$PYTHON_EXE" -c "from menuinst.api import install; import os; print(install(os.path.join('$PREFIX', 'PROJECT_NAME', 'notebook_launcher.json')))" >> "$LOG_FILE" 2>&1
+"$PYTHON_EXE" -c "from menuinst.api import install; import os; print(install(os.path.join('$PREFIX', 'StarDist2D', 'notebook_launcher.json')))" >> "$LOG_FILE" 2>&1
 
 echo "Post-install completed successfully." >> "$LOG_FILE"
 
