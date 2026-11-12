@@ -16,7 +16,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 REFERENCE = ROOT / "tests" / "reference" / "StarDist_2D_ZeroCostDL4Mic_1.20.8.ipynb"
 NOTEBOOK = ROOT / "notebooks" / "StarDist_2D" / "StarDist_2D_ZeroCostDL4Mic.ipynb"
-VERSION = "1.0.3"
+VERSION = "1.0.4"
 NOTEBOOK_NAME = "StarDist_2D_ZeroCostDL4Mic"
 REPOSITORY = "CellMigrationLab/Stardist2D"
 COLAB_PACKAGES = (
@@ -63,6 +63,24 @@ TITLES = {
 """Cell titles where 1.20.8's first heading is a field label rather than a title."""
 
 LOCAL_NOTE = "<font size = 4>**JupyterLab users (LabConstrictor app):** {text}"
+STARDIST_DOI = "https://doi.org/10.1007/978-3-030-00934-2_30"
+"""The published StarDist 2D paper (Schmidt et al., MICCAI 2018, LNCS 11071, pp. 265-273)."""
+TEXT_CHANGES = {
+    0: (
+        (
+            "[Schmidt *et al.* in 2018, on arXiv](https://arxiv.org/abs/1806.03535)",
+            f"[Schmidt *et al.* in 2018 at MICCAI]({STARDIST_DOI}) (preprint on [arXiv](https://arxiv.org/abs/1806.03535))",
+        ),
+        (
+            "September 2018. (https://arxiv.org/abs/1806.03535)",
+            f"September 2018. Lecture Notes in Computer Science 11071, pp. 265-273 ({STARDIST_DOI}; preprint: "
+            "https://arxiv.org/abs/1806.03535)",
+        ),
+    ),
+}
+"""The only edits to 1.20.8's markdown text, by cell index: the published StarDist paper is cited, not only its arXiv
+preprint (owner decision, 1.0.4). Every other markdown cell is kept word for word."""
+
 NOTES = {
     4: "the app installed StarDist and its dependencies already; the cell below does nothing outside Colab.",
     6: "there is no runtime to restart; continue with section 1.3.",
@@ -139,6 +157,21 @@ else:
 """
 
 
+def changed_text(index: int, source: str) -> str:
+    """Return markdown cell *index* of 1.20.8 with its :data:`TEXT_CHANGES`; refuse an old text not found once.
+
+    Raises
+    ------
+    ValueError
+        If an old text does not occur exactly once (the reference notebook and the change list disagree).
+    """
+    for old, new in TEXT_CHANGES.get(index, ()):
+        if source.count(old) != 1:
+            raise ValueError(f"markdown cell {index}: {old!r} occurs {source.count(old)} times, expected once")
+        source = source.replace(old, new)
+    return source
+
+
 def build() -> dict[str, object]:
     """Return the notebook as a dictionary."""
     reference = json.loads(REFERENCE.read_text(encoding="utf-8"))
@@ -146,7 +179,7 @@ def build() -> dict[str, object]:
     for index, original in enumerate(reference["cells"]):
         source = "".join(original["source"])
         if original["cell_type"] == "markdown":
-            cells.append(_cell("markdown", source))
+            cells.append(_cell("markdown", changed_text(index, source)))
             if index in NOTES:
                 cells.append(_cell("markdown", LOCAL_NOTE.format(text=NOTES[index])))
             if index == 45:

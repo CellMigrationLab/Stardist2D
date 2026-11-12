@@ -8,6 +8,8 @@ description: |-
   A LabConstrictor port of the ZeroCostDL4Mic StarDist 2D notebook. Train a StarDist 2D model on your own images and masks, check its quality against ground truth, export it to the BioImage Model Zoo, and predict on new images, locally or on Google Colab.
 
   The same installed environment also gives Fiji, napari and QuPath a StarDist 2D segmentation tool: choose an open image and a pretrained or your own trained model, and get a label image, outlines (ROI Manager, Shapes layer or QuPath annotations) and a table of per-object measurements.
+
+  Please cite StarDist when you use this app: Schmidt U., Weigert M., Broaddus C., Myers G. Cell Detection with Star-Convex Polygons. MICCAI 2018, Lecture Notes in Computer Science 11071, pp. 265-273 (doi:10.1007/978-3-030-00934-2_30). Please also cite ZeroCostDL4Mic, the notebook this app is built on: von Chamier L., Laine R. F. et al. Democratising deep learning for microscopy with ZeroCostDL4Mic. Nature Communications 12, 2276 (2021) (doi:10.1038/s41467-021-22518-0), and LabConstrictor, which packages it (doi:10.48550/arXiv.2603.10704).
 kind: segmentation
 hosts: [notebook, napari, fiji, qupath]
 distribution:
@@ -19,7 +21,7 @@ distribution:
 license: MIT
 status: Experimental
 categories: [segmentation, nuclei, StarDist, deep learning, ZeroCostDL4Mic]
-doi: 10.1038/s41467-021-22518-0
+doi: 10.1007/978-3-030-00934-2_30
 docs_url: https://github.com/CellMigrationLab/Stardist2D/blob/main/README.md
 icon: app/logo/stardist2d.png
 screenshots:

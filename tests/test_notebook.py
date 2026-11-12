@@ -27,10 +27,23 @@ def test_the_notebook_file_is_current():
 
 
 def test_every_markdown_cell_of_1_20_8_is_kept_unchanged_and_in_order():
-    original = ["".join(c["source"]) for c in reference_cells() if c["cell_type"] == "markdown"]
+    """Word for word, except the documented TEXT_CHANGES (the published StarDist paper is cited)."""
+    original = [
+        build_notebook.changed_text(index, "".join(c["source"]))
+        for index, c in enumerate(reference_cells())
+        if c["cell_type"] == "markdown"
+    ]
     ours = ["".join(c["source"]) for c in _cells() if c["cell_type"] == "markdown"]
     iterator = iter(ours)
     assert all(any(text == candidate for candidate in iterator) for text in original)
+
+
+def test_the_published_stardist_paper_is_cited():
+    intro = "".join(_cells()[1]["source"])
+    assert intro.count(build_notebook.STARDIST_DOI) == 2
+    assert "on arXiv](" not in intro and "preprint on [arXiv](https://arxiv.org/abs/1806.03535)" in intro
+    changes = [change for changes in build_notebook.TEXT_CHANGES.values() for change in changes]
+    assert len(changes) == 2  # any new edit of 1.20.8's text must be added here and in the CHANGELOG
 
 
 def test_code_cells_are_titled_short_and_portable():
