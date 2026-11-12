@@ -1,0 +1,180 @@
+"""Build ``notebooks/StarDist_2D/StarDist_2D_ZeroCostDL4Mic.ipynb`` from the vendored 1.20.8 notebook.
+
+Every markdown cell of 1.20.8 is copied unchanged (Colab-only steps get a "JupyterLab users" note after
+them); every code cell becomes a one-line call of the step in :mod:`stardist2d.notebook`, under the
+title of the original cell. A version cell (LabConstrictor) comes first. Run after changing a step's
+call or a note: ``python tools/build_notebook.py``; ``tests/test_notebook.py`` checks the file is current.
+"""
+
+from __future__ import annotations
+
+import json
+import re
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+REFERENCE = ROOT / "tests" / "reference" / "StarDist_2D_ZeroCostDL4Mic_1.20.8.ipynb"
+NOTEBOOK = ROOT / "notebooks" / "StarDist_2D" / "StarDist_2D_ZeroCostDL4Mic.ipynb"
+VERSION = "1.0.0"
+NOTEBOOK_NAME = "StarDist_2D_ZeroCostDL4Mic"
+REPOSITORY = "CellMigrationLab/Stardist2D"
+COLAB_PACKAGES = (
+    "tifffile==2024.9.20",
+    "csbdeep==0.8.2",
+    "stardist==0.9.2",
+    "bioimageio.core==0.5.11",
+    "importlib-metadata==10.2.0",
+    "fpdf2==2.8.8",
+    "numcodecs==0.16.6",
+    "zarr==3.4.0",
+    "tf-keras==2.20.0",
+    "tensorflow==2.20.0",
+)
+"""What 1.20.8 installs on Colab (cell 5), plus importlib-metadata (needed by the BioImage Model Zoo export)."""
+
+STEPS = {
+    8: "from stardist2d import notebook\n\nsession = notebook.load_dependencies()",
+    11: "notebook.check_gpu()",
+    13: "notebook.mount_drive()",
+    17: "notebook.download_example_data(session)",
+    20: "notebook.training_parameters(session)",
+    23: "notebook.data_augmentation(session)",
+    25: "notebook.pretrained_weights(session)",
+    28: "notebook.prepare_training(session)",
+    30: "notebook.start_training(session)",
+    32: "notebook.choose_qc_model(session)",
+    34: "notebook.loss_curves(session)",
+    36: "notebook.quality_control(session)",
+    38: "notebook.export_bioimage_model_zoo(session)",
+    41: "notebook.predictions(session)",
+    43: "notebook.big_data_predictions(session)",
+}
+"""Original code cell index -> its replacement (the install cell 5 is written by :func:`install_cell`)."""
+
+TITLES = {
+    20: "Setting main training parameters",
+    23: "Data augmentation",
+    32: "Choose the model to evaluate",
+    38: "Export your model into the BioImage Model Zoo format",
+    41: "Generate prediction(s) from unseen dataset",
+    43: "Generate prediction(s) from unseen dataset (Big data)",
+}
+"""Cell titles where 1.20.8's first heading is a field label rather than a title."""
+
+LOCAL_NOTE = "<font size = 4>**JupyterLab users (LabConstrictor app):** {text}"
+NOTES = {
+    4: "the app installed StarDist and its dependencies already; the cell below does nothing outside Colab.",
+    6: "there is no runtime to restart; continue with section 1.3.",
+    9: "this section is only needed on Google Colab; the cells below just report what they find.",
+    12: "your files are on your computer, so there is no Drive to mount. Use folder paths on your computer below.",
+    16: "the app ships a small copy of this dataset (6 training pairs, 2 test pairs), so this works offline. Tick "
+    "`download_full_dataset` to download all 45 training pairs from Zenodo. Relative paths below start from "
+    "`base_folder` (`~/StarDist2D` by default).",
+    27: "if a model of the same name exists, tick `overwrite_existing_model` to replace it (the notebook no longer "
+    "deletes it without asking).",
+    40: "ImageJ ROI zips are written only when `Region_of_interests` is ticked (ticked by default).",
+    44: "your predictions are already on your computer, in `Results_folder`.",
+}
+EXTRA_LOG = (
+    "<font size = 4>**StarDist2D for LabConstrictor v1.0.0** (port of v1.20.8): the notebook runs locally in "
+    "JupyterLab (LabConstrictor installer) and on Google Colab; the code lives in the `stardist2d` package, also used "
+    "by the Fiji, napari and QuPath tools. Fixes and every difference from 1.20.8 are listed in the "
+    "[CHANGELOG](https://github.com/CellMigrationLab/Stardist2D/blob/main/CHANGELOG.md)."
+)
+
+
+def _cell(cell_type: str, source: str) -> dict[str, object]:
+    """Return a notebook cell (code cells hidden as Colab forms, no outputs)."""
+    cell: dict[str, object] = {"cell_type": cell_type, "metadata": {}, "source": source.splitlines(keepends=True)}
+    if cell_type == "code":
+        cell.update(execution_count=None, outputs=[], metadata={"cellView": "form"})
+    return cell
+
+
+def title_of(source: str, default: str) -> str:
+    """Return the first ``#@markdown`` heading of an original cell, without the markup."""
+    for line in source.splitlines():
+        match = re.match(r"\s*#\s*@markdown\s*#*\s*(.+)", line)
+        if match:
+            return match.group(1).strip()
+    return default
+
+
+def version_cell() -> str:
+    """Return the template's version cell (``.tools/docs/notebook_upload.md``) with this notebook's name and version."""
+    text = (ROOT / ".tools" / "docs" / "notebook_upload.md").read_text(encoding="utf-8")
+    snippet = text.split("```\n", 2)[1]
+    snippet = snippet.replace('current_version = "0.0.1"', f'current_version = "{VERSION}"')
+    snippet = re.sub(r'notebook_name = "Notebook_template".*', f'notebook_name = "{NOTEBOOK_NAME}"', snippet)
+    return "# @title Notebook version\n" + snippet.split("\n", 1)[1].rstrip() + "\n"
+
+
+def install_cell() -> str:
+    """Return section 1.1: install on Colab only (the app installed everything locally), then restart the runtime."""
+    packages = ",\n        ".join(f'"{package}"' for package in COLAB_PACKAGES)
+    return f"""# @title Install StarDist and dependencies
+import subprocess
+import sys
+
+if "google.colab" in sys.modules:
+    packages = [
+        {packages},
+        "git+https://github.com/{REPOSITORY}@v{VERSION}",
+    ]
+    subprocess.run([sys.executable, "-m", "pip", "install", "-q", *packages], check=True)
+    print("Installed: the runtime now restarts (section 1.2).")
+    exit(0)
+else:
+    print("Running locally: StarDist2D and its dependencies were installed with the app.")
+"""
+
+
+def build() -> dict[str, object]:
+    """Return the notebook as a dictionary."""
+    reference = json.loads(REFERENCE.read_text(encoding="utf-8"))
+    cells = [_cell("code", version_cell())]
+    for index, original in enumerate(reference["cells"]):
+        source = "".join(original["source"])
+        if original["cell_type"] == "markdown":
+            cells.append(_cell("markdown", source))
+            if index in NOTES:
+                cells.append(_cell("markdown", LOCAL_NOTE.format(text=NOTES[index])))
+            if index == 45:
+                cells.append(_cell("markdown", EXTRA_LOG))
+            continue
+        code = (
+            install_cell()
+            if index == 5
+            else f"# @title {TITLES.get(index) or title_of(source, 'Run this cell')}\n{STEPS[index]}\n"
+        )
+        cells.append(_cell("code", code))
+    metadata = {
+        "accelerator": "GPU",
+        "colab": {"provenance": []},
+        "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
+        "language_info": {"name": "python"},
+    }
+    return {"cells": cells, "metadata": metadata, "nbformat": 4, "nbformat_minor": 0}
+
+
+def rendered() -> str:
+    """Return the notebook file's text (stable JSON, one cell field per line)."""
+    return json.dumps(build(), indent=1, ensure_ascii=False) + "\n"
+
+
+def main() -> int:
+    """Write the notebook; with ``--check``, only report whether the file is current."""
+    text = rendered()
+    if "--check" in sys.argv:
+        current = NOTEBOOK.is_file() and NOTEBOOK.read_text(encoding="utf-8") == text
+        print("notebook is current" if current else "notebook is out of date: run python tools/build_notebook.py")
+        return 0 if current else 1
+    NOTEBOOK.parent.mkdir(parents=True, exist_ok=True)
+    NOTEBOOK.write_text(text, encoding="utf-8")
+    print(f"wrote {NOTEBOOK.relative_to(ROOT)}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

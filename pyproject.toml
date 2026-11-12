@@ -1,0 +1,107 @@
+# Tool settings only: the package is built from setup.py (LabConstrictor template; no [build-system]
+# table, so pip keeps using setuptools and the installer's `pip install --no-deps` is unchanged).
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+src = ["src", "tests", "tools"]
+# Template files (synced from LabConstrictor, never hand-edited here) and the deliberately bad guard fixtures.
+# tests/reference holds the upstream ZeroCostDL4Mic notebook, byte for byte.
+extend-exclude = ["tests/guard_fixtures", "tests/reference", ".tools", ".template_sync", "app"]
+
+[tool.ruff.lint]
+# The MorphoBricks code standards (design v0.4 §9), as in CellPatcher and morphobricks-preprocessing.
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # import sorting
+    "B",   # bugbear: likely bugs
+    "UP",  # modern syntax for the target Python
+    "NPY", # numpy-specific checks
+    "D",   # docstrings
+    "C90", # complexity (spec §9: at most 15)
+    "PLR0913", # at most 8 parameters
+    "PLR0915", # at most 50 statements
+    "ANN", # complete annotations
+    "PGH004", # a noqa names its rules, so the noqa ratchet sees every one
+]
+ignore = [
+    "D105", # magic methods need no docstring
+    "D107", # __init__ is documented on the class
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.lint.mccabe]
+max-complexity = 15
+
+[tool.ruff.lint.pylint]
+max-args = 8
+max-statements = 50
+
+[tool.ruff.lint.isort]
+known-first-party = ["stardist2d", "stardist2d_lc_tools", "code_rules", "check", "reference_notebook", "build_notebook"]
+# Spec §9: annotations come with postponed evaluation (I002 enforces it).
+required-imports = ["from __future__ import annotations"]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests are exempt from the annotation and docstring rules (as in CellPatcher).
+"tests/**" = ["D", "ANN", "I002"]
+"notebooks/**" = ["I002"]  # notebook cells are not modules
+# Parity with ZeroCostDL4Mic 1.20.8: the augmenter draws from NumPy's global generator, as StarDist's training
+# expects (it calls augmenter(x, y) with no generator), so np.random.seed makes runs repeatable.
+"src/stardist2d/augment.py" = ["NPY002"]
+# 1.20.8 seeds the global generator (16) for StarDist's random label colours; plotting restores the state after.
+"src/stardist2d/plotting.py" = ["NPY002"]
+"tests/parity/test_augment_parity.py" = ["NPY002"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# The package is imported from src/ without installing it (setup.py is rendered by the template);
+# tools/ holds check.py and the shared code_rules.py that tests/test_code_rules.py imports.
+pythonpath = ["src", "tools", "tests"]
+markers = [
+    "slow: needs TensorFlow and StarDist (runs in the slow CI job; never deleted or weakened)",
+]
+
+[tool.morphobricks.code-rules]
+# The shared tools/code_rules.py (spec §9), configured for this repository.
+owner = "stardist2d"
+package = "src/stardist2d"
+baseline = "tools/code_rules_baseline.json"
+
+[tool.morphobricks.code-rules.layers]
+# pure: no I/O, no UI; io: reads or writes files; ui: notebook and command line, no
+# computing; orchestration: ties the others together.
+"stardist2d" = "orchestration"
+"stardist2d.__main__" = "ui"
+"stardist2d.augment" = "pure"
+"stardist2d.batch" = "orchestration"
+"stardist2d.bioimage" = "orchestration"
+"stardist2d.bridge" = "orchestration"
+"stardist2d.cli" = "ui"
+"stardist2d.config" = "pure"
+"stardist2d.data" = "io"
+"stardist2d.datasets" = "io"
+"stardist2d.environment" = "io"
+"stardist2d.export" = "io"
+"stardist2d.keras_backend" = "orchestration"
+"stardist2d.metrics" = "pure"
+"stardist2d.model" = "orchestration"
+"stardist2d.notebook" = "ui"
+"stardist2d.notebook.evaluation_steps" = "ui"
+"stardist2d.notebook.forms" = "ui"
+"stardist2d.notebook.prediction_steps" = "ui"
+"stardist2d.notebook.session" = "ui"
+"stardist2d.notebook.setup_steps" = "ui"
+"stardist2d.notebook.training_steps" = "ui"
+"stardist2d.plotting" = "ui"
+"stardist2d.predict" = "orchestration"
+"stardist2d.prepare" = "pure"
+"stardist2d.pretrained" = "io"
+"stardist2d.provenance" = "io"
+"stardist2d.qc" = "orchestration"
+"stardist2d.report" = "io"
+"stardist2d.train" = "orchestration"

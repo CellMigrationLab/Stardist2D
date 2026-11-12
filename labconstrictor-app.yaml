@@ -1,9 +1,50 @@
 # yaml-language-server: $schema=https://labconstrictor.cellmig.org/schema/labconstrictor-app.schema.json
+# The installer bundles this file and passes it to labconstrictor-tools register (--app-manifest): the hosts: line
+# decides where the app's tools (src/stardist2d_lc_tools) are listed.
 schema: 1
 name: StarDist2D
-summary: Train and run Stardist2D
-kind: analysis
-hosts:
-- notebook
+summary: Segment star-convex nuclei and cells in 2D images with StarDist, from a notebook, Fiji, napari or QuPath.
+description: |-
+  A LabConstrictor port of the ZeroCostDL4Mic StarDist 2D notebook. Train a StarDist 2D model on your own images and masks, check its quality against ground truth, export it to the BioImage Model Zoo, and predict on new images, locally or on Google Colab.
+
+  The same installed environment also gives Fiji, napari and QuPath a StarDist 2D segmentation tool: choose an open image and a pretrained or your own trained model, and get a label image, outlines (ROI Manager, Shapes layer or QuPath annotations) and a table of per-object measurements.
+kind: segmentation
+hosts: [notebook, napari, fiji, qupath]
 distribution:
   installer: true
+  platforms: [windows-x86_64, macos-arm64, linux-x86_64]
+  colab:
+    - label: StarDist 2D notebook
+      url: https://colab.research.google.com/github/CellMigrationLab/Stardist2D/blob/main/notebooks/StarDist_2D/StarDist_2D_ZeroCostDL4Mic.ipynb
+license: MIT
+status: Experimental
+categories: [segmentation, nuclei, StarDist, deep learning, ZeroCostDL4Mic]
+doi: 10.1038/s41467-021-22518-0
+homepage: https://github.com/CellMigrationLab/Stardist2D
+docs_url: https://github.com/CellMigrationLab/Stardist2D/blob/main/README.md
+icon: app/logo/stardist2d.png
+screenshots:
+  - path: docs/screenshots/08_quality_control.png
+    caption: "Quality control in the notebook: metrics table and the per-image viewer"
+  - path: docs/screenshots/10_predictions.png
+    caption: "Predictions on unseen images, with the labels drawn over the image"
+inputs:
+  - "2D images as TIFF: single-channel fluorescence or RGB (H&E); stacks are predicted frame by frame in the notebook"
+  - "Training: matching folders of images and label masks (same file names, TIFF)"
+  - "A pretrained model (2D_versatile_fluo, 2D_versatile_he, 2D_paper_dsb2018) or your own StarDist 2D model folder"
+outputs:
+  - "Label images (one integer per object), TIFF"
+  - "Object outlines: ImageJ ROI zip, GeoJSON (Fiji ROI Manager, napari Shapes, QuPath annotations)"
+  - "Per-object table (centroid, area, probability) and object counts, CSV"
+  - "Trained model folder, quality-control metrics (IoU, F1, panoptic quality) and PDF reports"
+limitations:
+  - "2D only; use the StarDist 3D app for volumes"
+  - "Objects must be roughly star-convex (round nuclei, cells); long or branched shapes segment poorly"
+  - "GPU training only on Linux with an NVIDIA GPU; Windows and macOS train on the CPU (slow), prediction works everywhere"
+  - "Pretrained models are downloaded on first use (internet needed once)"
+  - "QuPath receives outlines as annotations, not detections"
+quickstart:
+  - "Fiji, napari or QuPath: open an image, start LabConstrictor Tools and choose StarDist 2D: Segment nuclei"
+  - "Pick 2D_versatile_fluo for fluorescence or 2D_versatile_he for H&E, keep the default thresholds, and run"
+  - "Notebook: open the StarDist 2D notebook from the app (or Colab) and follow sections 1 to 6; section 3.1 gives example data offline"
+  - "To train your own model: put images and masks in two folders with matching names, then run sections 3 and 4"

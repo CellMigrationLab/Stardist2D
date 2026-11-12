@@ -1,0 +1,96 @@
+{
+ "status": "COMPLETE",
+ "timings": {
+  "discovery_s": 0.253814838,
+  "dialog_construction_s": 0.167294207,
+  "worker_run_s": 6.149
+ },
+ "progress_events": [
+  [
+   "predicted tile 1 of 4",
+   23,
+   100
+  ],
+  [
+   "predicted tile 2 of 4",
+   45,
+   100
+  ],
+  [
+   "predicted tile 3 of 4",
+   68,
+   100
+  ],
+  [
+   "predicted tile 4 of 4",
+   90,
+   100
+  ],
+  [
+   "separating the objects",
+   90,
+   100
+  ],
+  [
+   "284 objects",
+   100,
+   100
+  ]
+ ],
+ "image_stardist_labels": [
+  1024,
+  1024,
+  1,
+  16
+ ],
+ "shapes_stardist_outlines": {
+  "count": 284,
+  "shown": 284,
+  "holes": 0,
+  "image": "test_01.tif",
+  "overlay_size": 284,
+  "manager_count": 284,
+  "features": 284
+ },
+ "table_stardist_objects": {
+  "rows": 284,
+  "cols": [
+   "label",
+   "centroid_y",
+   "centroid_x",
+   "area_px",
+   "probability"
+  ],
+  "first": "1\t64\t30\t640\t0.930",
+  "title": "stardist_objects"
+ },
+ "message_summary": "Found **284** objects.",
+ "open_windows": [
+  "test_01.tif",
+  "StarDist2D:stardist_labels"
+ ],
+ "open_tables": [
+  "Log",
+  "ROI Manager",
+  "stardist_objects"
+ ],
+ "dialog_choices": {
+  "image": [
+   "test_01.tif"
+  ],
+  "model": [
+   "2D_versatile_fluo",
+   "2D_paper_dsb2018",
+   "Custom model folder"
+  ],
+  "region": [
+   "test_01.tif"
+  ]
+ },
+ "dialog_defaults": {
+  "image": "test_01.tif",
+  "model": "2D_versatile_fluo",
+  "region": "test_01.tif"
+ },
+ "note": "Excerpt of the LabConstrictor-Fiji harness report (tests/run_cases.py --real-apps); temporary paths removed."
+}

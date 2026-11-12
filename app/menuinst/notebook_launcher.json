@@ -15,7 +15,7 @@
       ],
       "platforms": {
         "win": {
-          "icon": "",
+          "icon": "BASE_PATH_KEYWORD/StarDist2D/stardist2d.ico",
           "command": [
             "{{ PYTHON }}",
             "{{ PREFIX }}/StarDist2D/launch_jupyter.py",
@@ -25,10 +25,10 @@
           ]
         },
         "linux": {
-          "icon": ""
+          "icon": "BASE_PATH_KEYWORD/StarDist2D/stardist2d.png"
         },
         "osx": {
-          "icon": ""
+          "icon": "BASE_PATH_KEYWORD/StarDist2D/stardist2d.icns"
         }
       }
     }
