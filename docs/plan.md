@@ -1,6 +1,6 @@
 # Plan v2 — StarDist 2D (ZeroCostDL4Mic) as a single LabConstrictor repository
 
-Status: reviewed adversarially (independent re-check of every claim against code, PyPI and real dependency
+Status (2026-11-12): **implemented and merged** (Stardist2D PR #2); this file keeps the plan and its decisions. Originally: reviewed adversarially (independent re-check of every claim against code, PyPI and real dependency
 resolution). Supersedes v1 (kept as `STARDIST2D_LABCONSTRICTOR_PLAN_v1.md`). Nothing is committed anywhere.
 The draft manifest and tool declarations arrive in P3.
 
