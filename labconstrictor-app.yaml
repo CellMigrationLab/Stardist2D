@@ -20,7 +20,6 @@ license: MIT
 status: Experimental
 categories: [segmentation, nuclei, StarDist, deep learning, ZeroCostDL4Mic]
 doi: 10.1038/s41467-021-22518-0
-homepage: https://github.com/CellMigrationLab/Stardist2D
 docs_url: https://github.com/CellMigrationLab/Stardist2D/blob/main/README.md
 icon: app/logo/stardist2d.png
 screenshots:
