@@ -3,6 +3,15 @@
 StarDist2D is a LabConstrictor port of the ZeroCostDL4Mic StarDist 2D notebook, version 1.20.8.
 Every intentional difference from 1.20.8 is listed here under **Differences from ZeroCostDL4Mic 1.20.8**.
 
+## 1.0.2 (2026-11-12)
+
+### Fixed
+- **Windows installer script line endings:** `post_install.bat` has CR LF line endings again, as in the template (the
+  repository initialisation had rewritten it with LF; `cmd.exe` can miss `GOTO`/`CALL` labels in an LF-only batch file).
+  `tests/test_installer_scripts.py` checks it.
+- **LabConstrictor website:** `labconstrictor-app.yaml` no longer sets `homepage` to the repository address (the site
+  refused it as a second, plain link to the repository).
+
 ## 1.0.1 (2026-11-12)
 
 ### Fixed

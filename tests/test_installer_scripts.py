@@ -37,3 +37,9 @@ def test_post_install_checks_this_package() -> None:
         text = (ROOT / "app/bash_bat_scripts" / script).read_text(encoding="utf-8")
         assert "import stardist2d;" in text, script
         assert "stardist2d_lc_tools" in text, script
+
+
+def test_windows_script_keeps_crlf_line_endings() -> None:
+    """post_install.bat has CR LF line endings, as in the template: cmd.exe can miss GOTO/CALL labels otherwise."""
+    data = (ROOT / "app/bash_bat_scripts/post_install.bat").read_bytes()
+    assert data.count(b"\n") == data.count(b"\r\n"), "post_install.bat has lines ending in LF only"
