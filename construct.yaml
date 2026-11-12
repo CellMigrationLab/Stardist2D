@@ -56,6 +56,7 @@ extra_files:
 - src/stardist2d/batch.py: StarDist2D/src/stardist2d/batch.py
 - src/stardist2d/bioimage.py: StarDist2D/src/stardist2d/bioimage.py
 - src/stardist2d/bridge.py: StarDist2D/src/stardist2d/bridge.py
+- src/stardist2d/bridge_train.py: StarDist2D/src/stardist2d/bridge_train.py
 - src/stardist2d/cli.py: StarDist2D/src/stardist2d/cli.py
 - src/stardist2d/config.py: StarDist2D/src/stardist2d/config.py
 - src/stardist2d/data.py: StarDist2D/src/stardist2d/data.py
