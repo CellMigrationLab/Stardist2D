@@ -3,6 +3,61 @@
 StarDist2D is a LabConstrictor port of the ZeroCostDL4Mic StarDist 2D notebook, version 1.20.8.
 Every intentional difference from 1.20.8 is listed here under **Differences from ZeroCostDL4Mic 1.20.8**.
 
+## 1.0.3 (unreleased)
+
+Corrections from an independent audit of 1.0.2. Each fix has a test (`tests/test_audit_fixes.py`, `tests/test_batch.py`).
+
+### Fixed
+- **Original images could be overwritten** (notebook section 6 and the command line). A results folder that is, contains
+  or lies inside the image folder (symbolic links resolved) is now refused before anything is written. 1.20.8 had the
+  same problem; the Fiji, napari and QuPath tools already refused the same folder.
+- **Resuming a stack** (section 6.1) checks the frames themselves. Frames `frame_00000.tif`, `frame_00001.tif`... are
+  checked in order, and counting stops at the first missing or unreadable one. 1.20.8 counted every file in the
+  folder, so a stray file or a half-written frame skipped frames that were never predicted. The resumed stack's
+  `<stack>_Nuclei_number.csv` is complete: the counts of earlier frames come from their label images. 1.20.8 kept only
+  the new frames.
+- **Big-image stacks** (section 6.2) are skipped when complete and resumed when partial, with the same frame check, as
+  1.20.8 did. 1.0.0–1.0.2 predicted every stack again.
+- **The tools' model cache** reloads a model when its weights or thresholds change, not only its `config.json`.
+- **Normalisation is checked:**
+  - percentiles must satisfy 0 ≤ low < high ≤ 100 (reversed limits inverted the intensities);
+  - images with NaN or infinite pixels are refused;
+  - an image whose two percentiles are equal is refused, because its rare bright pixels would be amplified about
+    10^20 times. A uniform image still gives no objects.
+- **Thresholds and tiling are checked:** probability and overlap thresholds must lie between 0 and 1. A misspelt
+  `n_tiles` (anything but `None`, `"auto"` or a tuple) is refused; it used to switch tiling off silently.
+- **Undefined QC values are explained:** when ground truth and prediction are both empty, the IoU stays `NaN` in the
+  QC table (as 1.20.8). The reason (`both_masks_empty`) is written beside it in
+  `Quality_Control for <model>_undefined.csv` and named in the tool's summary.
+- **Quality control (tools)** refuses more than 65,535 objects, instead of wrapping the 16-bit labels it returns.
+- **Dataset downloads** (section 3.1) are unpacked into a staging folder. Every part (training and QC images and
+  masks, the model) is checked, and only then is the folder marked complete. A folder left by an interrupted download
+  is replaced, and a download shorter than announced is refused.
+- **Pretrained-model downloads** (section 3.4) are streamed to a temporary file and checked for a `config.json` and
+  weights before they replace anything.
+- **Atomic writes:** `training_evaluation.csv`, the PDF reports and the saved figures are written to a temporary file
+  first (same content).
+- **Keras check:** TensorFlow already running Keras 3 in the same Python session (imported and used before
+  `stardist2d`) is now refused with what to do. The check used to look only at the environment variable.
+- **Versions:** the training report and the notebook's introduction say the current version (they said 1.0.0).
+- **Section 5.3:** the `PixelSize` field says it is not used (1.20.8 asked for it and never passed it on).
+
+### Documented differences from 1.20.8 not listed before
+- **Section 6.1, resumed stacks:** no ROI zip is written, because the frames predicted earlier have no ROIs. The
+  notebook and the tools say so.
+- **Sections 6.1 and 6.2:** only `.tif` files of the input folders are read. 1.20.8 tried every file.
+- **Section 6.2:** the final two-panel preview of the last label image is not shown.
+- **Parity tests:** label TIFFs and ImageJ ROI zips are compared by their pixel values and ROI contents, not their
+  file bytes. The CSV files are compared byte for byte.
+
+### Known gaps (planned)
+- A provenance file is written by command-line training and prediction only, not yet by the notebook, quality
+  control or the batch workflows. Training provenance does not yet record the model's weights.
+- Section 6.2 reads the whole image into memory before predicting it block by block. It is not out-of-core, so
+  very large images need enough RAM.
+- The parity tests run selected statements of the 1.20.8 cells, and QC parity starts from written predictions.
+  End-to-end parity tests are planned.
+
 ## 1.0.2 (2026-11-12)
 
 ### Fixed
@@ -36,13 +91,13 @@ First release: the ZeroCostDL4Mic StarDist 2D notebook 1.20.8 as a LabConstricto
   `stardist2d.metrics` (section 5.2 metrics) and `stardist2d.export` (QC table, label images, ImageJ ROIs,
   centre and count CSVs, written atomically).
 - `stardist2d.data`, `stardist2d.prepare` (cells 17, 28), `stardist2d.model` and `stardist2d.predict` (cells 41, 43):
-  prediction runs tile by tile with progress and cancel hooks. Folder prediction writes outputs identical to
+  prediction runs tile by tile with progress and cancel hooks. Folder prediction writes outputs matching
   1.20.8's (labels, ImageJ ROI zips, centre and count CSVs; tested against the original cell).
 - `stardist2d.batch` (stacks, big images), `stardist2d.pretrained` (section 3.4), `stardist2d.train` (sections 4.1,
   4.2, with a per-epoch callback), `stardist2d.qc` (section 5) and `stardist2d.bioimage` (section 5.3).
 - `stardist2d.report` (training and QC PDFs from explicit inputs), `stardist2d.plotting` (the notebook's figures),
   `stardist2d.environment` (versions, GPU, CUDA without IPython magics), `stardist2d.provenance`
-  (`stardist2d_run.json` beside every output) and a command line (`python -m stardist2d train|qc|predict`).
+  (`stardist2d_run.json`, written by command-line training and prediction) and a command line (`python -m stardist2d train|qc|predict`).
 - **The notebook** `notebooks/StarDist_2D/StarDist_2D_ZeroCostDL4Mic.ipynb`, built by `tools/build_notebook.py` from
   the 1.20.8 notebook: every markdown cell kept word for word (plus "JupyterLab users" notes on Colab-only steps),
   every code cell one call of `stardist2d.notebook`, which shows a form with 1.20.8's parameter names and defaults.

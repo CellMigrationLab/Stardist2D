@@ -16,7 +16,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 REFERENCE = ROOT / "tests" / "reference" / "StarDist_2D_ZeroCostDL4Mic_1.20.8.ipynb"
 NOTEBOOK = ROOT / "notebooks" / "StarDist_2D" / "StarDist_2D_ZeroCostDL4Mic.ipynb"
-VERSION = "1.0.2"
+VERSION = "1.0.3"
 NOTEBOOK_NAME = "StarDist_2D_ZeroCostDL4Mic"
 REPOSITORY = "CellMigrationLab/Stardist2D"
 COLAB_PACKAGES = (
@@ -77,7 +77,7 @@ NOTES = {
     44: "your predictions are already on your computer, in `Results_folder`.",
 }
 EXTRA_LOG = (
-    "<font size = 4>**StarDist2D for LabConstrictor v1.0.0** (port of v1.20.8): the notebook runs locally in "
+    f"<font size = 4>**StarDist2D for LabConstrictor v{VERSION}** (port of v1.20.8): the notebook runs locally in "
     "JupyterLab (LabConstrictor installer) and on Google Colab; the code lives in the `stardist2d` package, also used "
     "by the Fiji, napari and QuPath tools. Fixes and every difference from 1.20.8 are listed in the "
     "[CHANGELOG](https://github.com/CellMigrationLab/Stardist2D/blob/main/CHANGELOG.md)."

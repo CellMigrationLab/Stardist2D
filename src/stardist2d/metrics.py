@@ -59,6 +59,17 @@ def binary_iou(ground_truth: np.ndarray, prediction: np.ndarray) -> float:
     return int(np.logical_and(truth, predicted).sum()) / union
 
 
+IOU_COLUMN = "Prediction v. GT Intersection over Union"
+BOTH_MASKS_EMPTY = "both_masks_empty"
+"""Why the foreground IoU of an image is undefined: neither the ground truth nor the prediction has an object."""
+
+
+def undefined_values(row: dict[str, Any]) -> list[tuple[str, str]]:
+    """Return ``(column, reason)`` for every undefined (NaN) value of a QC row, so that none is left unexplained."""
+    value = row[IOU_COLUMN]
+    return [(IOU_COLUMN, BOTH_MASKS_EMPTY)] if isinstance(value, float) and value != value else []
+
+
 def qc_row(
     image_name: str, ground_truth: np.ndarray, prediction: np.ndarray, iou_threshold: float = DEFAULT_IOU_THRESHOLD
 ) -> dict[str, Any]:

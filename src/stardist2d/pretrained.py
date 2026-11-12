@@ -46,20 +46,56 @@ class PretrainedWeights:
 
 
 def _download(url: str, target: Path, timeout: float) -> Path:
-    """Download *url* to *target*.
+    """Download *url* to *target*: streamed to a temporary file that replaces *target* only when complete.
 
     Raises
     ------
     RuntimeError
-        If the server does not answer with the file.
+        If the server does not answer with the file, or sends fewer bytes than it announced.
     """
     import requests
 
-    response = requests.get(url, timeout=timeout)
-    if response.status_code != 200:
-        raise RuntimeError(f"could not download {url} (HTTP {response.status_code})")
-    target.write_bytes(response.content)
-    return target
+    from stardist2d.export import atomic_write
+
+    def fetch(temporary: Path) -> None:
+        with requests.get(url, stream=True, timeout=timeout) as response:
+            if response.status_code != 200:
+                raise RuntimeError(f"could not download {url} (HTTP {response.status_code})")
+            total, done = int(response.headers.get("Content-Length", 0)), 0
+            with temporary.open("wb") as handle:
+                for block in response.iter_content(1 << 20):
+                    handle.write(block)
+                    done += len(block)
+        if total and done != total:
+            raise RuntimeError(f"the download of {url} stopped after {done} of {total} bytes; try again")
+
+    return atomic_write(target, fetch)
+
+
+def _unpack(archive: Path, folder: Path) -> None:
+    """Unpack *archive* into *folder* through a staging folder; refuse an archive without ``config.json`` and weights.
+
+    Raises
+    ------
+    RuntimeError
+        If the unpacked model lacks ``config.json`` or a ``weights_*.h5`` file.
+    """
+    import shutil
+
+    staging = folder.with_name(f".{folder.name}.partial")
+    shutil.rmtree(staging, ignore_errors=True)
+    with zipfile.ZipFile(archive) as unpacked:
+        unpacked.extractall(staging)
+    model_folder = next((path.parent for path in staging.rglob("config.json")), None)
+    if model_folder is None or not any(model_folder.glob("weights_*.h5")):
+        shutil.rmtree(staging, ignore_errors=True)
+        raise RuntimeError(f"{archive.name} does not contain a StarDist model (config.json and weights)")
+    for path in staging.iterdir():
+        target = folder / path.name
+        if target.is_dir():
+            shutil.rmtree(target)
+        path.replace(target)
+    staging.rmdir()
 
 
 def fetch_model_folder(choice: str, download_folder: Path, bioimageio_model: str = "", timeout: float = 600) -> Path:
@@ -88,8 +124,7 @@ def fetch_model_folder(choice: str, download_folder: Path, bioimageio_model: str
     for file_name, url in files.items():
         target = _download(url, folder / file_name, timeout)
         if target.suffix == ".zip":
-            with zipfile.ZipFile(target) as archive:
-                archive.extractall(folder)
+            _unpack(target, folder)
     return folder
 
 

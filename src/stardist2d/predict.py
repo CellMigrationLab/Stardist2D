@@ -51,12 +51,22 @@ class Detection:
     high_percentile: float = prepare.HIGH_PERCENTILE
     n_tiles: tuple[int, ...] | str | None = None
 
+    def __post_init__(self) -> None:
+        prepare.check_percentiles(self.low_percentile, self.high_percentile)
+        for name, value in (("prob_thresh", self.prob_thresh), ("nms_thresh", self.nms_thresh)):
+            if value is not None and not 0 <= value <= 1:
+                raise ValueError(f"{name} must be between 0 and 1; got {value}")
+        if isinstance(self.n_tiles, str) and self.n_tiles != "auto":
+            raise ValueError(f"n_tiles must be None, 'auto' or a tuple of integers; got {self.n_tiles!r}")
+
 
 def _tiles(model: StarDist2D, image: np.ndarray, n_tiles: tuple[int, ...] | str | None) -> tuple[int, ...] | None:
     """Return the tiles to use for *image* (see :class:`Detection`)."""
     if n_tiles == "auto":
         return tuple(model._guess_n_tiles(image))
-    return n_tiles if n_tiles is None or isinstance(n_tiles, tuple) else None
+    if n_tiles is None or isinstance(n_tiles, tuple):
+        return n_tiles
+    raise ValueError(f"n_tiles must be None, 'auto' or a tuple of integers; got {n_tiles!r}")
 
 
 def predict_normalised(
@@ -208,6 +218,7 @@ def predict_folder(
     from stardist2d import data, export
 
     detection, hooks = detection or Detection(), hooks or Hooks()
+    data.check_separate_folders(images_folder, results_folder)
     files = data.image_files(images_folder, "prediction images")
     results_folder.mkdir(parents=True, exist_ok=True)
     counts: list[tuple[str, int]] = []

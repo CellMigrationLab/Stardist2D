@@ -36,10 +36,25 @@ def check_keras_backend() -> None:
     Raises
     ------
     KerasBackendError
-        If ``tensorflow`` is imported but ``TF_USE_LEGACY_KERAS`` is not ``1``.
+        If ``tensorflow`` is imported but ``TF_USE_LEGACY_KERAS`` is not ``1``, or TensorFlow already loaded
+        Keras 3 (the variable was set too late).
     """
-    if "tensorflow" in sys.modules and os.environ.get(LEGACY_KERAS_VARIABLE) != "1":
+    if "tensorflow" not in sys.modules:
+        return
+    if os.environ.get(LEGACY_KERAS_VARIABLE) != "1":
         raise KerasBackendError(
             "TensorFlow was imported before stardist2d could select Keras 2. "
             "Import stardist2d first, or set TF_USE_LEGACY_KERAS=1 before starting Python."
+        )
+    # The variable only counts if it was set before TensorFlow loaded its Keras (it does so on the first use of
+    # tf.keras): ask TensorFlow which Keras it actually uses, rather than trusting the variable.
+    import tensorflow as tf
+
+    # tf.keras and its submodules are lazy placeholders; a real class shows which Keras TensorFlow loaded
+    # (Keras 2: tf_keras.src...; Keras 3: keras.src...).
+    module = tf.keras.layers.Layer.__module__
+    if not module.startswith("tf_keras"):
+        raise KerasBackendError(
+            f"TensorFlow already uses Keras 3 ({module}) in this Python session, so StarDist cannot use Keras 2. "
+            "Restart the kernel (or the program) and import stardist2d before anything uses TensorFlow."
         )

@@ -8,11 +8,13 @@ from typing import Any
 
 from IPython.display import display
 
+import stardist2d
 from stardist2d import config, data, environment, model, plotting, pretrained, report, train
 from stardist2d.notebook.forms import Field, Form, message, show_figure
 from stardist2d.notebook.session import Session
 
-NOTEBOOK_VERSION = "1.0.0"
+NOTEBOOK_VERSION = stardist2d.__version__
+"""The version written in the training report: the package's, so it moves with every release."""
 """Version written in the reports (the notebook's ``current_version``)."""
 
 

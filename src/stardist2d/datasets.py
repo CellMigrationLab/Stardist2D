@@ -179,23 +179,54 @@ def by_title(title: str) -> Dataset:
     raise ValueError(f"unknown dataset {title!r}: choose one of {[d.title for d in CATALOGUE]}")
 
 
+COMPLETE_MARKER = ".stardist2d_complete"
+"""Written into a dataset folder once every part was unpacked and checked; only then is the folder trusted."""
+
+
 def download(dataset: Dataset, destination: Path, progress: Callable[[float, str], None] | None = None) -> Path:
     """Download and unpack *dataset* into ``destination/<record>`` and return that folder.
 
-    A dataset already unpacked there is not downloaded again.
+    The zip is downloaded and unpacked into a staging folder, its parts are checked (training and QC images and
+    masks, the model), and only then is the staging folder moved into place and marked complete. A folder without
+    the mark (an interrupted earlier download) is replaced; a marked one is not downloaded again.
 
     Raises
     ------
     RuntimeError
-        If the download fails.
+        If the download fails or the archive lacks one of the dataset's parts.
+    """
+    folder = destination / dataset.record
+    if (folder / COMPLETE_MARKER).is_file():
+        return folder
+    staging = destination / f".{dataset.record}.partial"
+    shutil.rmtree(staging, ignore_errors=True)
+    staging.mkdir(parents=True)
+    archive = _fetch(dataset, staging / dataset.zip_name, progress)
+    with zipfile.ZipFile(archive) as unpacked:
+        unpacked.extractall(staging, [name for name in unpacked.namelist() if "__MACOSX" not in name])
+    archive.unlink()
+    shutil.rmtree(staging / "__MACOSX", ignore_errors=True)
+    parts = (dataset.training_images, dataset.training_masks, dataset.qc_images, dataset.qc_masks, dataset.model)
+    missing = [part for part in parts if not (staging / part).is_dir() or not any((staging / part).iterdir())]
+    if missing:
+        shutil.rmtree(staging, ignore_errors=True)
+        raise RuntimeError(f"{dataset.title}: the downloaded archive lacks {', '.join(missing)}")
+    shutil.rmtree(folder, ignore_errors=True)
+    staging.rename(folder)
+    (folder / COMPLETE_MARKER).write_text(dataset.url + "\n", encoding="utf-8")
+    return folder
+
+
+def _fetch(dataset: Dataset, archive: Path, progress: Callable[[float, str], None] | None) -> Path:
+    """Stream the dataset's zip to *archive*, reporting progress; refuse an incomplete download.
+
+    Raises
+    ------
+    RuntimeError
+        If the server does not answer with the file, or sends fewer bytes than it announced.
     """
     import requests
 
-    folder = destination / dataset.record
-    if (folder / dataset.training_images).is_dir():
-        return folder
-    folder.mkdir(parents=True, exist_ok=True)
-    archive = folder / dataset.zip_name
     with requests.get(dataset.url, stream=True, timeout=600) as response:
         if response.status_code != 200:
             raise RuntimeError(
@@ -208,8 +239,6 @@ def download(dataset: Dataset, destination: Path, progress: Callable[[float, str
                 done += len(block)
                 if progress and total:
                     progress(done / total, f"{dataset.title}: {done / 1e6:.0f} of {total / 1e6:.0f} MB")
-    with zipfile.ZipFile(archive) as unpacked:
-        unpacked.extractall(folder, [name for name in unpacked.namelist() if "__MACOSX" not in name])
-    archive.unlink()
-    shutil.rmtree(folder / "__MACOSX", ignore_errors=True)
-    return folder
+    if total and done != total:
+        raise RuntimeError(f"{dataset.title}: the download stopped after {done} of {total} bytes; try again")
+    return archive

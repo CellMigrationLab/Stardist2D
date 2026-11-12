@@ -28,3 +28,15 @@ def test_package_installer_notebook_and_index_agree():
         "notebook_latest_versions.yaml": index["StarDist_2D"]["StarDist_2D_ZeroCostDL4Mic"],
     }
     assert len(set(versions.values())) == 1, versions
+
+
+def test_the_training_report_and_the_notebook_text_carry_the_version():
+    """The training PDF and the notebook's introduction say the release they belong to (audit: they said 1.0.0)."""
+    from stardist2d.notebook import training_steps
+
+    assert training_steps.NOTEBOOK_VERSION == stardist2d.__version__
+    notebook = (ROOT / "notebooks/StarDist_2D/StarDist_2D_ZeroCostDL4Mic.ipynb").read_text()
+    assert f"StarDist2D for LabConstrictor v{stardist2d.__version__}**" in notebook
+    stale = set(re.findall(r"StarDist2D for LabConstrictor v([0-9.]+)", notebook)) - {stardist2d.__version__}
+    assert not stale, stale
+

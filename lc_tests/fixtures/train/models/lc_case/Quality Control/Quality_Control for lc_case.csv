@@ -1,0 +1,5 @@
+image,Prediction v. GT Intersection over Union,false positive,true positive,false negative,precision,recall,accuracy,f1 score,n_true,n_pred,mean_true_score,mean_matched_score,panoptic_quality
+cell_0.tif,0.0,6,0,7,0,0,0,0,7,6,0.0,0.0,0.0
+cell_1.tif,0.0,0,0,8,0,0,0,0,8,0,0.0,0.0,0.0
+cell_2.tif,0.0,1,0,8,0,0,0,0,8,1,0.0,0.0,0.0
+cell_3.tif,0.0,0,0,8,0,0,0,0,8,0,0.0,0.0,0.0

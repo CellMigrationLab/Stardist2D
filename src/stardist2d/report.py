@@ -179,10 +179,10 @@ def _closing(pdf: FPDF, reminder: str) -> None:
 
 
 def _save(pdf: FPDF, path: Path) -> Path:
-    """Write *pdf* to *path* (creating its folder)."""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    pdf.output(str(path))
-    return path
+    """Write *pdf* to *path* atomically (creating its folder): an interrupted run leaves no truncated report."""
+    from stardist2d.export import atomic_write
+
+    return atomic_write(path, lambda temporary: pdf.output(str(temporary)))
 
 
 def _metrics_html(rows: list[dict[str, Any]]) -> str:
