@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.0.2] - 2026-11-12
+
+### Changed
+- Version updated from 1.0.1 to 1.0.2
+
+**Commit Details:**
+- Hash: [`4f906e90`](https://github.com/CellMigrationLab/Stardist2D/commit/4f906e9033e0c14dceaed64040d5fbfe7d404176)
+- Author: guijacquemet
+- Date: 2026-11-12 11:53:33 +0200
+- Message: Merge pull request #5 from CellMigrationLab/claude/stardist-labconstrictor-plan-aizdd6
+
+1.0.2: drop manifest homepage (unblocks the website) and restore CR LF in post_install.bat
+
+---
 ## [1.0.1] - 2026-11-12
 
 ### Changed
