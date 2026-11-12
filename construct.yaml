@@ -12,6 +12,7 @@ keep_pkgs: false
 register_python: false
 initialize_conda: false
 extra_files:
+- .tools/meta/src_change.yaml: StarDist2D/src_change.yaml
 - app/bash_bat_scripts/pre_uninstall.sh: pre_uninstall.sh
 - app/bash_bat_scripts/uninstall.sh: uninstall.sh
 - app/logo/stardist2d.icns: StarDist2D/stardist2d.icns
@@ -19,6 +20,10 @@ extra_files:
 - app/logo/stardist2d.png: StarDist2D/stardist2d.png
 - app/menuinst/Welcome.ipynb: StarDist2D/notebooks/Welcome.ipynb
 - app/menuinst/notebook_launcher.json: StarDist2D/notebook_launcher.json
+- app/python_scripts/hide_code_cells.py: StarDist2D/hide_code_cells.py
+- app/python_scripts/include_path.py: StarDist2D/include_path.py
+- app/python_scripts/launch_jupyter.py: StarDist2D/launch_jupyter.py
+- construct.yaml: StarDist2D/construct.yaml
 - example_data/StarDist_2D/README.md: StarDist2D/example_data/StarDist_2D/README.md
 - example_data/StarDist_2D/Test - Images/test_01.tif: StarDist2D/example_data/StarDist_2D/Test - Images/test_01.tif
 - example_data/StarDist_2D/Test - Images/test_02.tif: StarDist2D/example_data/StarDist_2D/Test - Images/test_02.tif
@@ -37,13 +42,45 @@ extra_files:
 - example_data/StarDist_2D/Training - Masks/training_05.tif: StarDist2D/example_data/StarDist_2D/Training - Masks/training_05.tif
 - example_data/StarDist_2D/Training - Masks/training_06.tif: StarDist2D/example_data/StarDist_2D/Training - Masks/training_06.tif
 - example_data/StarDist_2D/original_names.csv: StarDist2D/example_data/StarDist_2D/original_names.csv
-- app/python_scripts/hide_code_cells.py: StarDist2D/hide_code_cells.py
-- app/python_scripts/include_path.py: StarDist2D/include_path.py
-- app/python_scripts/launch_jupyter.py: StarDist2D/launch_jupyter.py
-- construct.yaml: StarDist2D/construct.yaml
+- labconstrictor-app.yaml: StarDist2D/labconstrictor-app.yaml
+- notebooks/StarDist_2D/StarDist_2D_ZeroCostDL4Mic.ipynb: StarDist2D/notebooks/StarDist_2D/StarDist_2D_ZeroCostDL4Mic.ipynb
 - notebooks/notebook_latest_versions.yaml: StarDist2D/notebook_latest_versions.yaml
+- requirements.lock.txt: StarDist2D/requirements.lock.txt
 - requirements.txt: StarDist2D/requirements.txt
+- requirements_gpu.lock.txt: StarDist2D/requirements_gpu.lock.txt
 - requirements_gpu.txt: StarDist2D/requirements_gpu.txt
+- setup.py: StarDist2D/setup.py
+- src/stardist2d/__init__.py: StarDist2D/src/stardist2d/__init__.py
+- src/stardist2d/__main__.py: StarDist2D/src/stardist2d/__main__.py
+- src/stardist2d/augment.py: StarDist2D/src/stardist2d/augment.py
+- src/stardist2d/batch.py: StarDist2D/src/stardist2d/batch.py
+- src/stardist2d/bioimage.py: StarDist2D/src/stardist2d/bioimage.py
+- src/stardist2d/bridge.py: StarDist2D/src/stardist2d/bridge.py
+- src/stardist2d/cli.py: StarDist2D/src/stardist2d/cli.py
+- src/stardist2d/config.py: StarDist2D/src/stardist2d/config.py
+- src/stardist2d/data.py: StarDist2D/src/stardist2d/data.py
+- src/stardist2d/datasets.py: StarDist2D/src/stardist2d/datasets.py
+- src/stardist2d/environment.py: StarDist2D/src/stardist2d/environment.py
+- src/stardist2d/export.py: StarDist2D/src/stardist2d/export.py
+- src/stardist2d/keras_backend.py: StarDist2D/src/stardist2d/keras_backend.py
+- src/stardist2d/metrics.py: StarDist2D/src/stardist2d/metrics.py
+- src/stardist2d/model.py: StarDist2D/src/stardist2d/model.py
+- src/stardist2d/notebook/__init__.py: StarDist2D/src/stardist2d/notebook/__init__.py
+- src/stardist2d/notebook/evaluation_steps.py: StarDist2D/src/stardist2d/notebook/evaluation_steps.py
+- src/stardist2d/notebook/forms.py: StarDist2D/src/stardist2d/notebook/forms.py
+- src/stardist2d/notebook/prediction_steps.py: StarDist2D/src/stardist2d/notebook/prediction_steps.py
+- src/stardist2d/notebook/session.py: StarDist2D/src/stardist2d/notebook/session.py
+- src/stardist2d/notebook/setup_steps.py: StarDist2D/src/stardist2d/notebook/setup_steps.py
+- src/stardist2d/notebook/training_steps.py: StarDist2D/src/stardist2d/notebook/training_steps.py
+- src/stardist2d/plotting.py: StarDist2D/src/stardist2d/plotting.py
+- src/stardist2d/predict.py: StarDist2D/src/stardist2d/predict.py
+- src/stardist2d/prepare.py: StarDist2D/src/stardist2d/prepare.py
+- src/stardist2d/pretrained.py: StarDist2D/src/stardist2d/pretrained.py
+- src/stardist2d/provenance.py: StarDist2D/src/stardist2d/provenance.py
+- src/stardist2d/qc.py: StarDist2D/src/stardist2d/qc.py
+- src/stardist2d/report.py: StarDist2D/src/stardist2d/report.py
+- src/stardist2d/train.py: StarDist2D/src/stardist2d/train.py
+- src/stardist2d_lc_tools/__init__.py: StarDist2D/src/stardist2d_lc_tools/__init__.py
 post_install: app/bash_bat_scripts/post_install.bat # [win]
 post_install: app/bash_bat_scripts/post_install.sh # [unix]
 pre_uninstall: app/bash_bat_scripts/pre_uninstall.bat # [win]
