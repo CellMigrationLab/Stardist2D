@@ -55,3 +55,8 @@ off); with names on, QuPath draws `StarDist2D:stardist_outlines N` over every nu
 
 Seen while doing this (LabConstrictor-QuPath, not this app): the tool dialog shows the group headings and ⓘ icons but
 not the parameter names beside the fields (`qupath/qp_stardist_2_dialog_after.png`).
+
+## Training from napari, Fiji and QuPath (1.1.0)
+
+`training/`: the *Train a model* tool in the three hosts (form, progress, results, segmenting with the new model):
+see [training/README.md](training/README.md).

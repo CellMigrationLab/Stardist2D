@@ -3,7 +3,27 @@
 StarDist2D is a LabConstrictor port of the ZeroCostDL4Mic StarDist 2D notebook, version 1.20.8.
 Every intentional difference from 1.20.8 is listed here under **Differences from ZeroCostDL4Mic 1.20.8**.
 
-## 1.0.4 (unreleased)
+## 1.1.0 (2026-11-12)
+
+### Added
+- **Train a model** (Fiji, napari, QuPath): the notebook's sections 3.2-4.2 as a tool.
+  - **Inputs:** folders of training images and masks; a new model name; epochs; augmentation; a start from scratch,
+    from a StarDist pretrained model or from your own model folder (section 3.4); the advanced parameters with the
+    notebook's defaults.
+  - **While it runs:** progress after every epoch.
+  - **Outputs:** the loss table, the QC metrics on the validation images, and a summary naming the model folder,
+    ready for *Custom model folder*.
+  - **Model folder:** the same files as the notebook writes, plus `stardist2d_run.json`.
+- **Cancel during training** stops within a batch (the hosts stop the worker 3 s after Cancel). The model folder keeps
+  `config.json`, the best weights so far, `Quality Control/training_evaluation.csv` and `stardist2d_run.json`; the
+  last two are rewritten after every epoch and say where training stopped. Thresholds are not optimised, so StarDist's
+  defaults apply. 1.20.8 has no Cancel.
+- **Quality control on a folder** (Fiji, napari, QuPath): the notebook's section 5 for a model folder. It writes the
+  same `Quality_Control for <model>.csv` and predictions in the model's `Quality Control` folder.
+
+### Changed
+- `training_evaluation.csv` is written atomically (same content and bytes as before).
+## 1.0.4 (2026-11-12)
 
 ### Changed
 - **Citing StarDist:**

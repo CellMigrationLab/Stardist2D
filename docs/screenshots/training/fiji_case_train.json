@@ -1,0 +1,18 @@
+{
+ "app": "StarDist2D",
+ "tool": "StarDist 2D: Train a model",
+ "overrides": {
+  "training_images": "/home/user/stardist2d/example_data/StarDist_2D/Training - Images",
+  "training_masks": "/home/user/stardist2d/example_data/StarDist_2D/Training - Masks",
+  "model_folder": "/tmp/claude-0/-home-user/f0966516-e97b-5068-9883-55a7c81a190e/scratchpad/fiji_train/models",
+  "model_name": "fiji_nuclei2",
+  "number_of_epochs": 3,
+  "start_from": "2D_versatile_fluo"
+ },
+ "progress_every_s": 15,
+ "final_screenshot": true,
+ "expect": {
+  "status": "COMPLETE"
+ },
+ "arrange": true
+}
