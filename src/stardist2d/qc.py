@@ -64,5 +64,20 @@ def run_quality_control(
         export.write_labels(predictions / image_path.name, labels)
         rows.append(metrics.qc_row(image_path.name, data.read_image(mask_path), labels, iou_threshold))
     table = export.write_qc_table(model_folder / QC_FOLDER / f"Quality_Control for {model_folder.name}.csv", rows)
+    _write_undefined_values(table, rows, hooks)
     hooks.progress(1.0, f"{len(rows)} images evaluated")
     return QualityControl(rows, table, predictions)
+
+
+def _write_undefined_values(table: Path, rows: list[dict[str, Any]], hooks: predict.Hooks) -> Path | None:
+    """Explain every NaN of the QC table in ``<table>_undefined.csv`` (image, column, reason); report how many.
+
+    The QC table keeps 1.20.8's columns and its NaN (two empty masks have no IoU); the reason goes beside it.
+    """
+    notes = [(row["image"], column, reason) for row in rows for column, reason in metrics.undefined_values(row)]
+    if not notes:
+        return None
+    path = table.with_name(f"{table.stem}_undefined.csv")
+    export.write_csv(path, [("image", "column", "reason"), *notes], "\n")
+    hooks.progress(1.0, f"{len(notes)} undefined value(s) in the QC table: reasons in {path.name}")
+    return path

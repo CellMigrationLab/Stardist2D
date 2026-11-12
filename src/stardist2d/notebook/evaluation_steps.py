@@ -127,7 +127,12 @@ def export_bioimage_model_zoo(session: Session) -> Form:
         Field("Trained_model_authors_affiliation", "[Affiliation 1, Affiliation 2, Affiliation 3]"),
         Field("Trained_model_description", ""),
         Field("Trained_model_license", "MIT"),
-        Field("PixelSize", 1.0, "float", help="Pixel size in microns of the example image (recorded, as in 1.20.8)"),
+        Field(
+            "PixelSize",
+            1.0,
+            "float",
+            help="Pixel size in microns of the example image. Not used: 1.20.8 asked for it but never passed it on",
+        ),
         Field("default_example_image", True, "bool"),
         Field("fileID", ""),
     ]

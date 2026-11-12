@@ -50,11 +50,23 @@ def _tool_error(code: str, text: str) -> Exception:
     return ToolError(code, text)
 
 
+MODEL_FILES = ("config.json", "thresholds.json", "weights_best.h5", "weights_last.h5")
+"""The files of a model folder whose change must reload the model (StarDist loads the best weights, else the last)."""
+
+
 @functools.lru_cache(maxsize=2)
-def _cached_model(source: str, folder: str, modified: float) -> StarDist2D:
-    """Load a model once per (source, folder, modification time)."""
-    _ = modified
+def _cached_model(source: str, folder: str, state: tuple[tuple[str, int, int], ...]) -> StarDist2D:
+    """Load a model once per (source, folder, state of its files)."""
+    _ = state
     return model.load_model(model.ModelChoice(source, Path(folder) if folder else None))
+
+
+def _folder_state(folder: str) -> tuple[tuple[str, int, int], ...]:
+    """Return (name, size, modification time in ns) of the model files present in *folder* (empty for none)."""
+    if not folder:
+        return ()
+    files = [Path(folder) / name for name in MODEL_FILES]
+    return tuple((path.name, path.stat().st_size, path.stat().st_mtime_ns) for path in files if path.is_file())
 
 
 def load(choice: ModelChoice) -> StarDist2D:
@@ -64,11 +76,8 @@ def load(choice: ModelChoice) -> StarDist2D:
     except ValueError as problem:
         raise _tool_error("invalid_parameter", str(problem)) from None
     folder = str(resolved.folder or "")
-    modified = (
-        (Path(folder) / "config.json").stat().st_mtime if folder and (Path(folder) / "config.json").is_file() else 0
-    )
     try:
-        return _cached_model(resolved.source, folder, modified)
+        return _cached_model(resolved.source, folder, _folder_state(folder))
     except FileNotFoundError as problem:
         raise _tool_error("invalid_parameter", str(problem)) from None
 
@@ -141,10 +150,13 @@ def segment(
     star_dist = load(choice)
     image = check_image(np.asarray(image), star_dist)
     rows, columns = _crop(region, image)
-    detection = predict.Detection(
-        settings.prob_thresh, settings.nms_thresh, settings.low_percentile, settings.high_percentile, "auto"
-    )
-    labels, details = predict.predict_image(star_dist, image[rows, columns], detection, _hooks())
+    try:
+        detection = predict.Detection(
+            settings.prob_thresh, settings.nms_thresh, settings.low_percentile, settings.high_percentile, "auto"
+        )
+        labels, details = predict.predict_image(star_dist, image[rows, columns], detection, _hooks())
+    except ValueError as problem:
+        raise _tool_error("invalid_parameter", str(problem)) from None
     if region is not None:
         labels, details = _inside(labels, details, np.asarray(region)[rows, columns] > 0)
     if len(details["points"]) == 0:
@@ -180,12 +192,16 @@ def segment_folder(
 
     if Path(output_folder).resolve() == Path(input_folder).resolve():
         raise _tool_error("invalid_parameter", "choose an output folder other than the input folder")
-    detection = predict.Detection(
-        settings.prob_thresh, settings.nms_thresh, settings.low_percentile, settings.high_percentile, "auto"
-    )
-    result = predict.predict_folder(
-        load(choice), Path(input_folder), Path(output_folder), detection, export_rois, _hooks()
-    )
+    star_dist = load(choice)
+    try:
+        detection = predict.Detection(
+            settings.prob_thresh, settings.nms_thresh, settings.low_percentile, settings.high_percentile, "auto"
+        )
+        result = predict.predict_folder(
+            star_dist, Path(input_folder), Path(output_folder), detection, export_rois, _hooks()
+        )
+    except ValueError as problem:
+        raise _tool_error("invalid_parameter", str(problem)) from None
     table = pd.DataFrame(result.counts, columns=["image", "objects"])
     return table, f"Segmented **{len(table)}** images into {output_folder}."
 
@@ -197,11 +213,25 @@ def quality_control(
     import pandas as pd
 
     star_dist = load(choice)
-    labels, _ = predict.predict_image(
-        star_dist, check_image(np.asarray(image), star_dist), predict.Detection(n_tiles="auto"), _hooks()
-    )
-    row = metrics.qc_row("image", np.asarray(ground_truth), labels, iou_threshold)
+    try:
+        labels, _ = predict.predict_image(
+            star_dist, check_image(np.asarray(image), star_dist), predict.Detection(n_tiles="auto"), _hooks()
+        )
+    except ValueError as problem:
+        raise _tool_error("invalid_parameter", str(problem)) from None
+    if int(labels.max()) > MAX_LABELS:  # before the metrics: the uint16 result below would wrap the labels
+        raise _tool_error(
+            "too_many_objects",
+            f"{int(labels.max())} objects: cannot be sent back as a 16-bit label image (at most "
+            f"{MAX_LABELS}); evaluate a smaller image",
+        )
+    try:
+        row = metrics.qc_row("image", np.asarray(ground_truth), labels, iou_threshold)
+    except ValueError as problem:
+        raise _tool_error("invalid_parameter", str(problem)) from None
     summary = f"F1 **{row['f1 score']:.3f}**, IoU {row['Prediction v. GT Intersection over Union']:.3f}"
+    for column, reason in metrics.undefined_values(row):
+        summary += f" ({column} undefined: {reason.replace('_', ' ')})"
     return labels.astype(np.uint16), pd.DataFrame([row]), summary
 
 

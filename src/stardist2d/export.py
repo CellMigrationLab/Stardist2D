@@ -19,7 +19,7 @@ import numpy as np
 from stardist2d.metrics import QC_COLUMNS
 
 
-def _atomic_write(path: Path, write: Callable[[Path], None]) -> Path:
+def atomic_write(path: Path, write: Callable[[Path], None]) -> Path:
     """Call ``write(temporary_path)`` and move the result to *path* only when it succeeded."""
     path.parent.mkdir(parents=True, exist_ok=True)
     handle, temporary = tempfile.mkstemp(prefix=f".{path.name}.", suffix=path.suffix, dir=path.parent)
@@ -33,7 +33,7 @@ def _atomic_write(path: Path, write: Callable[[Path], None]) -> Path:
     return path
 
 
-def _write_csv(path: Path, rows: Iterable[Sequence[Any]], line_end: str = "\r\n") -> Path:
+def write_csv(path: Path, rows: Iterable[Sequence[Any]], line_end: str = "\r\n") -> Path:
     """Write *rows* as CSV with *line_end* after each row.
 
     1.20.8 writes the QC table with the ``csv`` module (CR LF) and the prediction tables with pandas
@@ -45,14 +45,14 @@ def _write_csv(path: Path, rows: Iterable[Sequence[Any]], line_end: str = "\r\n"
             writer = csv.writer(handle, lineterminator=line_end)
             writer.writerows(rows)
 
-    return _atomic_write(path, write)
+    return atomic_write(path, write)
 
 
 def write_labels(path: Path, labels: np.ndarray) -> Path:
     """Write a label image as TIFF, keeping its integer type (1.20.8 writes ``model.predict_instances`` labels)."""
     import tifffile
 
-    return _atomic_write(path, lambda temporary: tifffile.imwrite(temporary, labels))
+    return atomic_write(path, lambda temporary: tifffile.imwrite(temporary, labels))
 
 
 def write_imagej_rois(path: Path, polygons: np.ndarray | Sequence[np.ndarray]) -> Path:
@@ -70,19 +70,19 @@ def write_imagej_rois(path: Path, polygons: np.ndarray | Sequence[np.ndarray]) -
         # export_imagej_rois adds ".zip" to the name it is given.
         export_imagej_rois(str(temporary.with_suffix("")), polygons)
 
-    return _atomic_write(path, write)
+    return atomic_write(path, write)
 
 
 def write_centres(path: Path, points: np.ndarray) -> Path:
     """Write object centres (``details['points']``, rows of ``(y, x)``) as ``<name>_Nuclei_centre.csv``."""
-    return _write_csv(path, [("Y", "X"), *(tuple(point) for point in np.asarray(points).tolist())], "\n")
+    return write_csv(path, [("Y", "X"), *(tuple(point) for point in np.asarray(points).tolist())], "\n")
 
 
 def write_counts(path: Path, counts: Iterable[tuple[str, int]]) -> Path:
     """Write ``(name, number of objects)`` rows without a header, as 1.20.8's ``Nuclei_count.csv``."""
-    return _write_csv(path, counts, "\n")
+    return write_csv(path, counts, "\n")
 
 
 def write_qc_table(path: Path, rows: Iterable[dict[str, Any]]) -> Path:
     """Write quality-control rows (:func:`stardist2d.metrics.qc_row`) with 1.20.8's header."""
-    return _write_csv(path, [QC_COLUMNS, *([row[column] for column in QC_COLUMNS] for row in rows)])
+    return write_csv(path, [QC_COLUMNS, *([row[column] for column in QC_COLUMNS] for row in rows)])

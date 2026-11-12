@@ -40,7 +40,9 @@ MorphoBricks repository, SHA-tested) and Ruff, against a shrink-only baseline th
 - Raise descriptive exceptions that say what to do; refuse rather than guess; never fail silently.
 - No processing logic in notebook cells; no `!`/`%` magics; Colab-only code inside
   `if "google.colab" in sys.modules:`.
-- Every output folder gets a provenance file; writes are atomic; never write into an input folder.
+- Every output folder gets a provenance file (the rule; today written by command-line training and prediction
+  and by the tools' training, not yet by the notebook, QC or batch workflows: see the CHANGELOG's known gaps);
+  writes are atomic; never write into, or overlap, an input folder (`data.check_separate_folders`).
 - Tests use small synthetic data in `tmp_path`. Tests that need TensorFlow are marked `slow`; never delete
   or weaken a test.
 

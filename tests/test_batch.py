@@ -54,9 +54,29 @@ def test_a_finished_stack_is_skipped_and_a_partial_one_resumed(tmp_path, model, 
     tifffile.imwrite(images / "movie.tif", np.stack([nuclei, nuclei]))
     batch.predict_stacks(model, images, tmp_path / "out")
     assert batch.predict_stacks(model, images, tmp_path / "out").skipped == ("movie.tif",)
+    clean = (tmp_path / "out" / "movie_Nuclei_number.csv").read_text()
     (tmp_path / "out" / "movie" / "frame_00001.tif").unlink()
     resumed = batch.predict_stacks(model, images, tmp_path / "out")
-    assert resumed.counts["movie.tif"][0][0] == 1
+    # The counts table stays complete: frame 0's count comes from its label image, written before.
+    assert [index for index, _ in resumed.counts["movie.tif"]] == [0, 1]
+    assert (tmp_path / "out" / "movie_Nuclei_number.csv").read_text() == clean
+
+
+def test_resume_ignores_stray_files_and_redoes_a_corrupt_frame(tmp_path, model, nuclei):
+    """1.20.8 counted every file of the folder; a stray file or a half-written frame must not count as done."""
+    images = tmp_path / "stacks"
+    images.mkdir()
+    tifffile.imwrite(images / "movie.tif", np.stack([nuclei, nuclei, nuclei]))
+    batch.predict_stacks(model, images, tmp_path / "out")
+    clean = (tmp_path / "out" / "movie_Nuclei_number.csv").read_text()
+    frames = tmp_path / "out" / "movie"
+    (frames / "frame_00002.tif").unlink()
+    (frames / "frame_00001.tif").write_bytes(b"half a tiff")
+    (frames / "notes.txt").write_text("stray")
+    assert batch.completed_frames(frames, 3) == 1
+    resumed = batch.predict_stacks(model, images, tmp_path / "out")
+    assert [index for index, _ in resumed.counts["movie.tif"]] == [0, 1, 2]
+    assert (tmp_path / "out" / "movie_Nuclei_number.csv").read_text() == clean
 
 
 def test_normalise_frame_fixes_the_inverted_division():

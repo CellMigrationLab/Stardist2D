@@ -27,8 +27,9 @@ def _figure(size: tuple[float, float]) -> Figure:
 def _save(figure: Figure, path: Path | None) -> Figure:
     """Save *figure* to *path* when one is given, as 1.20.8 does (tight bounding box, no padding)."""
     if path is not None:
-        path.parent.mkdir(parents=True, exist_ok=True)
-        figure.savefig(path, bbox_inches="tight", pad_inches=0)
+        from stardist2d.export import atomic_write
+
+        atomic_write(path, lambda temporary: figure.savefig(temporary, bbox_inches="tight", pad_inches=0))
     return figure
 
 

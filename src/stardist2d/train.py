@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import csv
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -11,7 +10,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from stardist2d import augment, config, data, model, prepare
+from stardist2d import augment, config, data, export, model, prepare
 from stardist2d.keras_backend import check_keras_backend
 
 if TYPE_CHECKING:
@@ -111,14 +110,14 @@ def train(
 def write_training_evaluation(model_folder: Path, history: dict[str, list[float]]) -> Path:
     """Write ``Quality Control/training_evaluation.csv`` with 1.20.8's columns (loss, val_loss, learning rate)."""
     rates = history.get("learning_rate", history.get("lr"))
-    path = model_folder / "Quality Control" / "training_evaluation.csv"
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.writer(handle)
-        writer.writerow(["loss", "val_loss", "learning rate"])
-        for index, loss in enumerate(history["loss"]):
-            writer.writerow([loss, history["val_loss"][index], rates[index] if rates else None])
-    return path
+    rows = [
+        [loss, history["val_loss"][index], rates[index] if rates else None]
+        for index, loss in enumerate(history["loss"])
+    ]
+    # Written atomically, with the csv module's CR LF line endings as 1.20.8 (the parity test compares the bytes).
+    return export.write_csv(
+        model_folder / "Quality Control" / "training_evaluation.csv", [["loss", "val_loss", "learning rate"], *rows]
+    )
 
 
 def new_model(training: TrainingData, model_folder: Path, overwrite: bool) -> StarDist2D:

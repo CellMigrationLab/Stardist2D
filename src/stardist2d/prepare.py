@@ -65,10 +65,42 @@ def prediction_axes(image: np.ndarray) -> tuple[int, ...]:
 def normalize_image(
     image: np.ndarray, axes: tuple[int, ...], low: float = LOW_PERCENTILE, high: float = HIGH_PERCENTILE
 ) -> np.ndarray:
-    """Return *image* scaled so that its *low* and *high* percentiles (over *axes*) become 0 and 1."""
+    """Return *image* scaled so that its *low* and *high* percentiles (over *axes*) become 0 and 1.
+
+    Refuses what would change the image's meaning without a word (CSBDeep would divide by ``high - low + 1e-20``):
+    percentiles out of order, non-finite pixels, and a range of zero width in an image that is not uniform (rare
+    bright pixels would be amplified about 1e20 times). A uniform image (nothing to segment) gives zeros, as before.
+
+    Raises
+    ------
+    ValueError
+        With what to change.
+    """
     from csbdeep.utils import normalize
 
+    check_percentiles(low, high)
+    if not np.all(np.isfinite(image)):
+        raise ValueError("the image has NaN or infinite pixels: it cannot be normalised")
+    low_value = np.percentile(image, low, axis=axes, keepdims=True)
+    high_value = np.percentile(image, high, axis=axes, keepdims=True)
+    if np.any(high_value <= low_value) and np.max(image) > np.min(image):
+        raise ValueError(
+            f"the {low} and {high} percentiles of the image are equal: most pixels have the same value and the few "
+            "others would be amplified enormously. Choose a higher upper percentile, or check the image."
+        )
     return normalize(image, low, high, axis=axes)
+
+
+def check_percentiles(low: float, high: float) -> None:
+    """Refuse normalisation percentiles that are not ``0 <= low < high <= 100`` (reversed limits invert intensities).
+
+    Raises
+    ------
+    ValueError
+        If the percentiles are out of range or out of order.
+    """
+    if not 0 <= low < high <= 100:
+        raise ValueError(f"normalisation percentiles must satisfy 0 <= low < high <= 100; got low {low}, high {high}")
 
 
 def fill_holes(labels: np.ndarray) -> np.ndarray:

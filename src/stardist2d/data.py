@@ -44,6 +44,25 @@ def image_files(folder: Path, role: str = "image") -> list[Path]:
     return files
 
 
+def check_separate_folders(inputs: Path, results: Path) -> None:
+    """Refuse a results folder that is, contains or lies inside the input folder (symbolic links resolved).
+
+    Outputs are named after the inputs (``<results>/<name>.tif``), so a shared folder would replace the original
+    images with label images, and a nested one would mix outputs into the inputs of the next run.
+
+    Raises
+    ------
+    ValueError
+        If the two folders overlap.
+    """
+    source, target = Path(inputs).resolve(), Path(results).resolve()
+    if target == source or source in target.parents or target in source.parents:
+        raise ValueError(
+            f"the results folder {results} overlaps the image folder {inputs}: the outputs would replace or mix with "
+            "your original images. Choose a new, separate results folder."
+        )
+
+
 def training_pairs(images_folder: Path, masks_folder: Path) -> list[tuple[Path, Path]]:
     """Return ``(image, mask)`` file pairs matched by name.
 
