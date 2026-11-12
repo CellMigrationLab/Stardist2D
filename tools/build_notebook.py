@@ -16,7 +16,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 REFERENCE = ROOT / "tests" / "reference" / "StarDist_2D_ZeroCostDL4Mic_1.20.8.ipynb"
 NOTEBOOK = ROOT / "notebooks" / "StarDist_2D" / "StarDist_2D_ZeroCostDL4Mic.ipynb"
-VERSION = "1.1.0"
+VERSION = "1.0.2"
 NOTEBOOK_NAME = "StarDist_2D_ZeroCostDL4Mic"
 REPOSITORY = "CellMigrationLab/Stardist2D"
 COLAB_PACKAGES = (

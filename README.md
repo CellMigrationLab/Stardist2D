@@ -34,18 +34,10 @@ if you need speed. A model trained anywhere works everywhere for prediction.
   | Segment nuclei (H&E / RGB) | the same for RGB images with `2D_versatile_he` or your 3-channel model |
   | Segment a folder | the notebook's section 6.1 outputs for every image of a folder |
   | Quality control | your model's prediction compared with a ground-truth mask |
-  | Train a model | a model trained on your folders of images and masks (sections 3-4 of the notebook), from scratch or from a pretrained model; loss table, validation F1 and the model folder |
-  | Quality control on a folder | section 5 of the notebook for a model you trained: QC table, F1 summary, predictions |
   | Check this installation | memory, disk, GPU and TensorFlow of the app |
 
   Models: `2D_versatile_fluo`, `2D_versatile_he`, `2D_paper_dsb2018` (downloaded once), or the folder of a model you
-  trained (in the notebook or with *Train a model*).
-
-  **Training from Fiji, napari or QuPath.** *Train a model* writes the same model folder as the notebook. Progress is
-  shown after every epoch. *Cancel* stops within a batch and keeps what was saved: the best weights so far, the loss
-  table, and `stardist2d_run.json`, which says where training stopped. Such a model works with StarDist's default
-  thresholds. Windows and macOS train on the CPU, so start with a few epochs; train long models in the notebook on
-  Colab or on a Linux computer with an NVIDIA GPU.
+  trained in the notebook.
 - **Command line**: `python -m stardist2d train|qc|predict ...` (see `python -m stardist2d --help`).
 
 ## Credits

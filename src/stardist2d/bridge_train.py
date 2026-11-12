@@ -133,8 +133,8 @@ def _run_record(target: Path, request: TrainingRequest, inputs: list[Path], stat
     provenance.write_run_file(target, "train (Fiji/napari/QuPath tool)", settings, inputs, environment.collect())
 
 
-def train_model(request: TrainingRequest) -> tuple[pd.DataFrame, pd.DataFrame, str]:
-    """Train a model as notebook sections 4.1-4.2 do; return the loss table, the validation QC and a summary."""
+def train_model(request: TrainingRequest) -> tuple[pd.DataFrame, pd.DataFrame, str, str]:
+    """Train a model as notebook sections 4.1-4.2 do; return the loss table, validation QC, a summary and the folder."""
     from labconstrictor_tools import check_cancel, progress
 
     target = model_target(request)
@@ -178,8 +178,8 @@ def validation_quality(star_dist: StarDist2D, split: TrainingSplit) -> list[dict
 
 def _training_tables(
     result: train.TrainingResult, validation: list[dict[str, Any]], target: Path, note: str
-) -> tuple[pd.DataFrame, pd.DataFrame, str]:
-    """Return the loss table, the validation QC table and the summary (naming the model folder) of a training."""
+) -> tuple[pd.DataFrame, pd.DataFrame, str, str]:
+    """Return the loss table, the validation QC table, the summary and the model folder of a finished training."""
     import pandas as pd
 
     history = result.history
@@ -199,7 +199,7 @@ def _training_tables(
         f"Validation F1 **{quality['f1 score'].mean():.3f}** (IoU 0.5). Use it with Model = 'Custom model folder' "
         f"and model folder = {target}"
     )
-    return curve, quality, summary
+    return curve, quality, summary, str(target)
 
 
 def quality_control_folder(
