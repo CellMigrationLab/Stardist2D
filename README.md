@@ -45,7 +45,7 @@ if you need speed. A model trained anywhere works everywhere for prediction.
   shown after every epoch. *Cancel* stops within a batch and keeps what was saved: the best weights so far, the loss
   table, and `stardist2d_run.json`, which says where training stopped. Such a model works with StarDist's default
   thresholds. Windows and macOS train on the CPU, so start with a few epochs; train long models in the notebook on
-  Colab or on a Linux computer with an NVIDIA GPU.
+  Colab or on a Linux computer with an NVIDIA GPU. Screenshots of training in napari, Fiji and QuPath: [docs/screenshots/training](docs/screenshots/training/README.md).
 - **Command line**: `python -m stardist2d train|qc|predict ...` (see `python -m stardist2d --help`).
 
 ## Credits

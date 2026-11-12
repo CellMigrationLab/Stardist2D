@@ -1,0 +1,23 @@
+{
+ "app": "StarDist2D",
+ "tool": "StarDist 2D: Segment nuclei (fluorescence)",
+ "preload": [
+  {
+   "path": "${REAL_FIXTURES}/test_01.tif",
+   "title": "test_01.tif"
+  }
+ ],
+ "select": [
+  "test_01.tif"
+ ],
+ "overrides": {
+  "image": "test_01.tif",
+  "model": "Custom model folder",
+  "model_folder": "/tmp/claude-0/-home-user/f0966516-e97b-5068-9883-55a7c81a190e/scratchpad/fiji_train/models/fiji_nuclei2"
+ },
+ "final_screenshot": true,
+ "expect": {
+  "status": "COMPLETE"
+ },
+ "arrange": true
+}
