@@ -43,7 +43,7 @@ class DetectionSettings:
     high_percentile: float = 99.8
 
 
-def tool_error(code: str, text: str) -> Exception:
+def _tool_error(code: str, text: str) -> Exception:
     """Return a LabConstrictor-Tools ``ToolError`` (shown to the person as a plain message)."""
     from labconstrictor_tools import ToolError
 
@@ -62,7 +62,7 @@ def load(choice: ModelChoice) -> StarDist2D:
     try:
         resolved = model.ModelChoice(choice.source, choice.folder)
     except ValueError as problem:
-        raise tool_error("invalid_parameter", str(problem)) from None
+        raise _tool_error("invalid_parameter", str(problem)) from None
     folder = str(resolved.folder or "")
     modified = (
         (Path(folder) / "config.json").stat().st_mtime if folder and (Path(folder) / "config.json").is_file() else 0
@@ -70,10 +70,10 @@ def load(choice: ModelChoice) -> StarDist2D:
     try:
         return _cached_model(resolved.source, folder, modified)
     except FileNotFoundError as problem:
-        raise tool_error("invalid_parameter", str(problem)) from None
+        raise _tool_error("invalid_parameter", str(problem)) from None
 
 
-def tool_hooks() -> predict.Hooks:
+def _hooks() -> predict.Hooks:
     """Return hooks that report progress to the host and stop when the person cancels."""
     from labconstrictor_tools import check_cancel, progress
 
@@ -87,9 +87,9 @@ def check_image(image: np.ndarray, star_dist: StarDist2D) -> np.ndarray:
     """
     channels = star_dist.config.n_channel_in
     if channels == 1 and image.ndim != 2:
-        raise tool_error("wrong_dimensions", f"this model needs a single-channel 2D image; got shape {image.shape}")
+        raise _tool_error("wrong_dimensions", f"this model needs a single-channel 2D image; got shape {image.shape}")
     if channels > 1 and (image.ndim != 3 or image.shape[-1] != channels):
-        raise tool_error(
+        raise _tool_error(
             "wrong_dimensions", f"this model needs a 2D image with {channels} channels (RGB); got shape {image.shape}"
         )
     return image
@@ -144,13 +144,13 @@ def segment(
     detection = predict.Detection(
         settings.prob_thresh, settings.nms_thresh, settings.low_percentile, settings.high_percentile, "auto"
     )
-    labels, details = predict.predict_image(star_dist, image[rows, columns], detection, tool_hooks())
+    labels, details = predict.predict_image(star_dist, image[rows, columns], detection, _hooks())
     if region is not None:
         labels, details = _inside(labels, details, np.asarray(region)[rows, columns] > 0)
     if len(details["points"]) == 0:
-        raise tool_error("no_match", "No object found: try a lower probability threshold, or another model.")
+        raise _tool_error("no_match", "No object found: try a lower probability threshold, or another model.")
     if len(details["points"]) > MAX_LABELS:
-        raise tool_error(
+        raise _tool_error(
             "too_many_objects", f"{len(details['points'])} objects: select a smaller region (at most {MAX_LABELS})."
         )
     full = np.zeros(image.shape[:2], dtype=np.uint16)
@@ -179,12 +179,12 @@ def segment_folder(
     import pandas as pd
 
     if Path(output_folder).resolve() == Path(input_folder).resolve():
-        raise tool_error("invalid_parameter", "choose an output folder other than the input folder")
+        raise _tool_error("invalid_parameter", "choose an output folder other than the input folder")
     detection = predict.Detection(
         settings.prob_thresh, settings.nms_thresh, settings.low_percentile, settings.high_percentile, "auto"
     )
     result = predict.predict_folder(
-        load(choice), Path(input_folder), Path(output_folder), detection, export_rois, tool_hooks()
+        load(choice), Path(input_folder), Path(output_folder), detection, export_rois, _hooks()
     )
     table = pd.DataFrame(result.counts, columns=["image", "objects"])
     return table, f"Segmented **{len(table)}** images into {output_folder}."
@@ -198,7 +198,7 @@ def quality_control(
 
     star_dist = load(choice)
     labels, _ = predict.predict_image(
-        star_dist, check_image(np.asarray(image), star_dist), predict.Detection(n_tiles="auto"), tool_hooks()
+        star_dist, check_image(np.asarray(image), star_dist), predict.Detection(n_tiles="auto"), _hooks()
     )
     row = metrics.qc_row("image", np.asarray(ground_truth), labels, iou_threshold)
     summary = f"F1 **{row['f1 score']:.3f}**, IoU {row['Prediction v. GT Intersection over Union']:.3f}"

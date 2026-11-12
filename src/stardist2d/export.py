@@ -33,7 +33,7 @@ def _atomic_write(path: Path, write: Callable[[Path], None]) -> Path:
     return path
 
 
-def write_csv(path: Path, rows: Iterable[Sequence[Any]], line_end: str = "\r\n") -> Path:
+def _write_csv(path: Path, rows: Iterable[Sequence[Any]], line_end: str = "\r\n") -> Path:
     """Write *rows* as CSV with *line_end* after each row.
 
     1.20.8 writes the QC table with the ``csv`` module (CR LF) and the prediction tables with pandas
@@ -75,14 +75,14 @@ def write_imagej_rois(path: Path, polygons: np.ndarray | Sequence[np.ndarray]) -
 
 def write_centres(path: Path, points: np.ndarray) -> Path:
     """Write object centres (``details['points']``, rows of ``(y, x)``) as ``<name>_Nuclei_centre.csv``."""
-    return write_csv(path, [("Y", "X"), *(tuple(point) for point in np.asarray(points).tolist())], "\n")
+    return _write_csv(path, [("Y", "X"), *(tuple(point) for point in np.asarray(points).tolist())], "\n")
 
 
 def write_counts(path: Path, counts: Iterable[tuple[str, int]]) -> Path:
     """Write ``(name, number of objects)`` rows without a header, as 1.20.8's ``Nuclei_count.csv``."""
-    return write_csv(path, counts, "\n")
+    return _write_csv(path, counts, "\n")
 
 
 def write_qc_table(path: Path, rows: Iterable[dict[str, Any]]) -> Path:
     """Write quality-control rows (:func:`stardist2d.metrics.qc_row`) with 1.20.8's header."""
-    return write_csv(path, [QC_COLUMNS, *([row[column] for column in QC_COLUMNS] for row in rows)])
+    return _write_csv(path, [QC_COLUMNS, *([row[column] for column in QC_COLUMNS] for row in rows)])
