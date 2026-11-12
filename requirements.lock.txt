@@ -1,0 +1,117 @@
+# Lock file of requirements.txt: every package the installer installs with pip, with its exact version.
+# Written by .tools/python/lock_requirements.py (uv 0.13.3, universal resolution for Python 3.12); do not edit it by hand.
+# It is written again only when requirements.txt, the Python or JupyterLab version changes (see the fingerprint below).
+# lock-input: sha256:b7670b2485e6c359a0904dffbeb62c85a5a9e0319f9b5246263f220915fd0ef2
+
+absl-py==2.5.1
+annotated-doc==0.0.6
+annotated-types==0.8.0
+astropy==7.2.2
+astropy-iers-data==0.2026.11.9.0.35.9
+asttokens==3.0.2
+astunparse==1.6.3
+bioimageio-core==0.5.11
+bioimageio-spec==0.4.9.post5
+charset-normalizer==3.5.2
+cloudpickle==3.1.2
+colorama==0.4.6 ; sys_platform == 'win32'
+comm==0.2.3
+contourpy==1.4.0
+csbdeep==0.8.2
+cycler==0.12.1
+defusedxml==0.7.1
+donfig==0.8.1.post1
+executing==2.3.0
+flatbuffers==25.12.19
+fonttools==4.68.0
+fpdf2==2.8.8
+gast==0.7.0
+google-crc32c==1.9.0
+google-pasta==0.2.0
+grpcio==1.85.1
+h5py==3.16.0
+idna==3.20
+imageio==2.38.1
+importlib-metadata==10.2.0
+ipython==9.18.1
+ipython-pygments-lexers==1.1.1
+ipywidgets==8.1.7
+jedi==0.20.1
+jl-hidecode==0.0.1
+joblib==1.6.0
+jupyterlab-widgets==3.0.17
+keras==3.15.1
+kiwisolver==1.5.1
+lazy-importer==0.1.0 ; python_full_version < '3.15'
+lazy-loader==0.6
+libclang==18.1.1
+llvmlite==0.45.1
+markdown==3.11.3
+markdown-it-py==4.3.0
+markupsafe==3.0.4
+marshmallow==3.26.2
+marshmallow-jsonschema==0.16.0
+marshmallow-union==0.1.15.post1
+matplotlib==3.10.0
+matplotlib-inline==0.2.2
+mdurl==0.1.2
+ml-dtypes==0.5.4 ; python_full_version >= '3.14'
+ml-dtypes==0.6.0 ; python_full_version < '3.14'
+msgspec==0.22.0
+namex==0.1.0
+networkx==3.7
+numba==0.62.1
+numcodecs==0.16.6
+numpy==2.1.3
+opt-einsum==3.4.0
+optree==0.20.0
+packaging==26.3
+pandas==2.2.3
+parso==0.8.7
+pexpect==4.9.0 ; sys_platform != 'emscripten' and sys_platform != 'win32'
+pillow==11.3.0
+prompt-toolkit==3.0.53
+protobuf==7.36.2
+psutil==7.2.2 ; sys_platform != 'android' and sys_platform != 'cygwin' and sys_platform != 'emscripten'
+ptyprocess==0.7.0 ; sys_platform != 'emscripten' and sys_platform != 'win32'
+pure-eval==0.2.4
+pydantic==2.14.3
+pydantic-core==2.50.4
+pyerfa==2.0.1.5
+pygments==2.21.0
+pyparsing==3.3.3
+python-dateutil==4.0.0
+pytz==2026.6
+pyyaml==6.0.3
+requests==2.32.4
+rich==15.0.0
+ruamel-yaml==0.19.1
+scikit-image==0.25.2
+scikit-learn==1.6.1
+scipy==1.16.3
+shellingham==1.5.4
+six==1.17.0
+stack-data==0.6.3
+stardist==0.9.2
+tabulate==0.9.0
+tensorboard==2.20.0
+tensorboard-data-server==0.7.2
+tensorflow==2.20.0
+termcolor==3.3.0
+tf-keras==2.20.0
+threadpoolctl==3.8.0
+tifffile==2024.9.20
+tqdm==4.67.3
+traitlets==5.16.1
+typer==0.29.1
+typing-extensions==4.16.0
+typing-inspection==0.4.5
+tzdata==2026.6
+urllib3==2.8.0
+wcwidth==0.9.4
+werkzeug==3.1.9
+widgetsnbextension==4.0.16
+wrapt==2.5.2
+xarray==2026.9.0
+zarr==3.4.0
+zipp==4.1.2

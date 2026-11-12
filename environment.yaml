@@ -1,16 +1,16 @@
 name: stardist2d
 channels:
-  - conda-forge
-  - bioconda
-  - nodefaults
+- conda-forge
+- bioconda
+- nodefaults
 dependencies:
-  - python=PYTHON_VERSION
-  - conda
-  - git
-  - pip>=24.2
-  - setuptools
-  - wheel
-  - menuinst>=2
-  - truststore>=0.10.4
-  - certifi
-  - jupyterlab=JUPYTERLAB_VERSION
+- python=3.12
+- conda
+- git
+- pip>=24.2
+- setuptools
+- wheel
+- menuinst>=2
+- truststore>=0.10.4
+- certifi
+- jupyterlab=4.4.0
