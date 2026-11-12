@@ -124,6 +124,82 @@
   }
  },
  {
+  "tool": "train_model",
+  "inputs": {
+   "training_images": "fixtures/train/images",
+   "training_masks": "fixtures/train/masks",
+   "model_folder": "fixtures/train/models",
+   "model_name": "lc_case",
+   "number_of_epochs": 1,
+   "overwrite": true
+  },
+  "expect": {
+   "results": {
+    "training_curve": {
+     "rows": 1,
+     "columns": [
+      "epoch",
+      "loss",
+      "val_loss",
+      "learning_rate"
+     ]
+    },
+    "validation_quality": {
+     "rows": 1
+    }
+   },
+   "max_seconds": 600,
+   "progress_events_min": 2
+  }
+ },
+ {
+  "tool": "train_model",
+  "inputs": {
+   "training_images": "fixtures/train/images",
+   "training_masks": "fixtures/folder",
+   "model_folder": "fixtures/train/models",
+   "model_name": "lc_case",
+   "number_of_epochs": 1,
+   "overwrite": true
+  },
+  "expect": {
+   "status": "FAILED",
+   "code": "invalid_parameter"
+  }
+ },
+ {
+  "tool": "train_model",
+  "inputs": {
+   "training_images": "fixtures/train/images",
+   "training_masks": "fixtures/train/masks",
+   "model_folder": "fixtures/folder",
+   "model_name": "a.tif",
+   "number_of_epochs": 1,
+   "overwrite": false
+  },
+  "expect": {
+   "status": "FAILED",
+   "code": "invalid_parameter",
+   "message_contains": "already exists"
+  }
+ },
+ {
+  "tool": "quality_control_folder",
+  "inputs": {
+   "model_folder": "fixtures/train/models/lc_case",
+   "test_images": "fixtures/train/images",
+   "test_masks": "fixtures/train/masks"
+  },
+  "expect": {
+   "results": {
+    "qc_metrics": {
+     "rows": 4
+    }
+   },
+   "max_seconds": 300
+  }
+ },
+ {
   "tool": "check_installation",
   "inputs": {},
   "expect": {

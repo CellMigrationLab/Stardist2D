@@ -205,3 +205,7 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Models written by the training tool's test cases (lc_tests/cases.json)
+lc_tests/fixtures/train/models/*
+!lc_tests/fixtures/train/models/.gitkeep
