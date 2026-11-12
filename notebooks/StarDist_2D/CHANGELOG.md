@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.0.4] - 2026-11-12
+
+### Changed
+- Version updated from 1.0.3 to 1.0.4
+
+**Commit Details:**
+- Hash: [`63d59e59`](https://github.com/CellMigrationLab/Stardist2D/commit/63d59e5911fe3e26db523da68a70f22a53afbcc1)
+- Author: guijacquemet
+- Date: 2026-11-12 14:01:49 +0200
+- Message: Merge pull request #7 from CellMigrationLab/claude/stardist-labconstrictor-plan-aizdd6
+
+1.0.4: cite the published StarDist paper (notebook, website, README)
+
+---
 ## [1.0.3] - 2026-11-12
 
 ### Changed
