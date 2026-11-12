@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.1.0] - 2026-11-12
+
+### Changed
+- Version updated from 1.0.4 to 1.1.0
+
+**Commit Details:**
+- Hash: [`17832974`](https://github.com/CellMigrationLab/Stardist2D/commit/178329745feb74a6957d925d7cb84209e1508aaf)
+- Author: guijacquemet
+- Date: 2026-11-12 15:23:31 +0200
+- Message: Merge pull request #8 from CellMigrationLab/claude/stardist-labconstrictor-plan-aizdd6
+
+1.1.0: train StarDist 2D models from napari, Fiji and QuPath
+
+---
 ## [1.0.4] - 2026-11-12
 
 ### Changed
