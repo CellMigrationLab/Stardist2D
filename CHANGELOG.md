@@ -3,7 +3,7 @@
 StarDist2D is a LabConstrictor port of the ZeroCostDL4Mic StarDist 2D notebook, version 1.20.8.
 Every intentional difference from 1.20.8 is listed here under **Differences from ZeroCostDL4Mic 1.20.8**.
 
-## 1.1.0 (unreleased)
+## 1.1.0 (2026-11-12)
 
 ### Added
 - **Train a model** (Fiji, napari, QuPath): the notebook's sections 3.2-4.2 as a tool.
