@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import csv
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -11,7 +10,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from stardist2d import augment, config, data, model, prepare
+from stardist2d import augment, config, data, export, model, prepare
 from stardist2d.keras_backend import check_keras_backend
 
 if TYPE_CHECKING:
@@ -68,16 +67,28 @@ def load_training_data(
     return TrainingData(split, n_channel, image_shape, patch.patch_size, patch.notes, steps, settings)
 
 
-def _keras_callback(on_epoch: Callable[[int, dict[str, float]], None]) -> tf_keras.callbacks.Callback:
-    """Return a Keras callback that calls ``on_epoch(epoch, logs)`` after every epoch."""
+def _keras_callback(
+    on_epoch: Callable[[int, dict[str, float]], None] | None, on_batch: Callable[[], None] | None
+) -> tf_keras.callbacks.Callback:
+    """Return a Keras callback calling ``on_epoch(epoch, logs)`` after each epoch and ``on_batch()`` after each batch.
+
+    An exception raised by either stops training at once (Keras lets it through): the tools raise ``Cancelled`` from
+    ``on_batch`` so that Cancel stops within a batch. What StarDist saved until then (``weights_best.h5``, written at
+    every epoch whose validation loss improved) stays in the model folder.
+    """
     check_keras_backend()
     import tf_keras
 
-    class _EpochCallback(tf_keras.callbacks.Callback):
+    class _ProgressCallback(tf_keras.callbacks.Callback):
         def on_epoch_end(self, epoch: int, logs: dict[str, float] | None = None) -> None:
-            on_epoch(epoch, dict(logs or {}))
+            if on_epoch:
+                on_epoch(epoch, dict(logs or {}))
 
-    return _EpochCallback()
+        def on_train_batch_end(self, batch: int, logs: dict[str, float] | None = None) -> None:
+            if on_batch:
+                on_batch()
+
+    return _ProgressCallback()
 
 
 def train(
@@ -86,13 +97,18 @@ def train(
     epochs: int,
     use_augmentation: bool,
     on_epoch: Callable[[int, dict[str, float]], None] | None = None,
+    on_batch: Callable[[], None] | None = None,
 ) -> TrainingResult:
-    """Train *star_dist* and optimise its thresholds on the validation images (cell 30)."""
+    """Train *star_dist* and optimise its thresholds on the validation images (cell 30).
+
+    *on_epoch* is called after every epoch with its logs; *on_batch* after every batch. Either may raise to stop
+    training (see :func:`_keras_callback`); then no thresholds are optimised and nothing is returned.
+    """
     split = training.split
-    if on_epoch:
+    if on_epoch or on_batch:
         # StarDist's train() has no callbacks argument: it uses model.callbacks, made by prepare_for_training().
         star_dist.prepare_for_training()
-        star_dist.callbacks.append(_keras_callback(on_epoch))
+        star_dist.callbacks.append(_keras_callback(on_epoch, on_batch))
     start = time.time()
     history = star_dist.train(
         split.x_train,
@@ -111,14 +127,14 @@ def train(
 def write_training_evaluation(model_folder: Path, history: dict[str, list[float]]) -> Path:
     """Write ``Quality Control/training_evaluation.csv`` with 1.20.8's columns (loss, val_loss, learning rate)."""
     rates = history.get("learning_rate", history.get("lr"))
-    path = model_folder / "Quality Control" / "training_evaluation.csv"
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.writer(handle)
-        writer.writerow(["loss", "val_loss", "learning rate"])
-        for index, loss in enumerate(history["loss"]):
-            writer.writerow([loss, history["val_loss"][index], rates[index] if rates else None])
-    return path
+    rows = [
+        [loss, history["val_loss"][index], rates[index] if rates else None]
+        for index, loss in enumerate(history["loss"])
+    ]
+    # Written atomically: the tools rewrite it after every epoch, and a cancelled run is stopped mid-way.
+    return export.write_csv(
+        model_folder / "Quality Control" / "training_evaluation.csv", [["loss", "val_loss", "learning rate"], *rows]
+    )
 
 
 def new_model(training: TrainingData, model_folder: Path, overwrite: bool) -> StarDist2D:
