@@ -39,20 +39,27 @@ def drop_alpha(images: Sequence[np.ndarray]) -> list[np.ndarray]:
     return list(images)
 
 
+def normalization_axes(image: np.ndarray) -> tuple[int, ...]:
+    """Return the axes the percentiles are taken over, the same for training, quality control and prediction.
+
+    One channel: ``(0, 1)``. Several channels (e.g. RGB / H&E): ``(0, 1, 2)``, all channels together, as
+    StarDist's own H&E example and the pretrained ``2D_versatile_he`` model expect.
+
+    Difference from 1.20.8: 1.20.8 normalised the channels of a multi-channel image separately for training
+    (cell 28) but together for quality control and prediction (cells 36, 41); a model was therefore trained on
+    differently scaled colours than it was used on. Single-channel images are unchanged.
+    """
+    return (0, 1) if channel_count(image) == 1 else (0, 1, 2)
+
+
 def training_axes(image: np.ndarray) -> tuple[int, ...]:
-    """Return the normalisation axes used for *training* (cell 28): each channel on its own, ``(0, 1)``."""
-    _ = image
-    return (0, 1)
+    """Return the normalisation axes for training images (:func:`normalization_axes`)."""
+    return normalization_axes(image)
 
 
 def prediction_axes(image: np.ndarray) -> tuple[int, ...]:
-    """Return the normalisation axes used for *quality control and prediction* (cells 36, 41).
-
-    One channel: ``(0, 1)``. Several channels: ``(0, 1, 2)``, all channels together. 1.20.8 trains with
-    channels normalised separately but predicts with them normalised together; this port keeps both as
-    they are (see docs/plan.md, open scientific question).
-    """
-    return (0, 1) if channel_count(image) == 1 else (0, 1, 2)
+    """Return the normalisation axes for quality control and prediction (:func:`normalization_axes`)."""
+    return normalization_axes(image)
 
 
 def normalize_image(

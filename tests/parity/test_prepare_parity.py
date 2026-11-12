@@ -36,7 +36,7 @@ def _data(n: int, channels: int):
     return images, labels
 
 
-@pytest.mark.parametrize(("n", "channels", "percentage"), [(5, 1, 10), (8, 3, 25), (4, 4, 50)])
+@pytest.mark.parametrize(("n", "channels", "percentage"), [(5, 1, 10), (9, 1, 25), (4, 1, 50)])
 def test_preparation_and_split_match_1_20_8(n, channels, percentage):
     images, labels = _data(n, channels)
     namespace = {
@@ -68,10 +68,33 @@ def test_preparation_and_split_match_1_20_8(n, channels, percentage):
             np.testing.assert_array_equal(a, b)
 
 
-def test_prediction_axes_are_joint_for_several_channels():
-    assert prepare.prediction_axes(np.zeros((4, 4))) == (0, 1)
-    assert prepare.prediction_axes(np.zeros((4, 4, 3))) == (0, 1, 2)
-    assert prepare.training_axes(np.zeros((4, 4, 3))) == (0, 1)
+def test_channels_are_normalised_together_for_training_and_prediction():
+    # Intentional difference from 1.20.8, which trained with channels normalised separately (axis (0, 1)).
+    for image in (np.zeros((4, 4, 3)), np.zeros((4, 4, 4))[..., :3]):
+        assert prepare.training_axes(image) == prepare.prediction_axes(image) == (0, 1, 2)
+    assert prepare.training_axes(np.zeros((4, 4))) == (0, 1)
+
+
+@pytest.mark.parametrize("channels", [3, 4])
+def test_rgb_training_preparation_differs_from_1_20_8_only_by_the_joint_normalisation(channels):
+    images, labels = _data(3, channels)
+    namespace = {
+        "X": list(images),
+        "Y": list(labels),
+        "normalize": normalize,
+        "fill_label_holes": fill_label_holes,
+        "tqdm": lambda items: items,
+        "np": np,
+        "percentage": 0.34,
+        "axis_norm": (0, 1, 2),
+        "n_channel": channels,
+        "print": lambda *args, **kwargs: None,
+    }
+    run(28, lambda code: code.startswith(STARTS) and not code.startswith("axis_norm"), namespace)
+    x = [prepare.normalize_image(image, prepare.training_axes(image)) for image in prepare.drop_alpha(images)]
+    split = prepare.split_training_data(x, labels, 1)
+    for ours, theirs in zip(split.x_train, namespace["X_trn"], strict=True):
+        np.testing.assert_array_equal(ours, theirs)
 
 
 def test_split_refuses_mismatched_or_too_small_inputs():

@@ -59,6 +59,9 @@ Every intentional difference from 1.20.8 is listed here under **Differences from
   longer stops the QC report.
 - **Forms instead of Colab fields:** Colab `#@param` fields do not exist in JupyterLab; each cell shows the same
   fields as widgets and a Run button. Section 6.2 needs equal block_size_Y and block_size_X.
+- **Colour (multi-channel) images:** normalised with all channels together for training too, as for quality control
+  and prediction (1.20.8 trained with each channel normalised on its own, then predicted with them together).
+  Single-channel images are unchanged.
 - **QC table:** images are listed in sorted order (1.20.8 used the folder's listing order). Values are unchanged.
 
 ### Removed

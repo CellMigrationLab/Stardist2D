@@ -137,5 +137,5 @@ Names reserved by other bricks: the real `RESERVED_NAMES` list (`code_rules.py:2
 
 1.20.8 normalises multi-channel (e.g. H&E) images **per channel** for training (cell 28, `axis_norm=(0,1)`) but
 **jointly** for quality control and prediction (cells 36, 41, `axis_norm=(0,1,2)`). The port keeps both as they are
-(`stardist2d.prepare.training_axes` / `prediction_axes`) because changing either changes results. To decide with
-the ZeroCostDL4Mic maintainers before v1.0.0.
+(`stardist2d.prepare.training_axes` / `prediction_axes`) because changing either changes results.
+*Decided (November 2026): normalise channels jointly everywhere (`prepare.normalization_axes`), listed in the CHANGELOG.*
