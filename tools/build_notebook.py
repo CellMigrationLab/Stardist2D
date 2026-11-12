@@ -16,7 +16,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 REFERENCE = ROOT / "tests" / "reference" / "StarDist_2D_ZeroCostDL4Mic_1.20.8.ipynb"
 NOTEBOOK = ROOT / "notebooks" / "StarDist_2D" / "StarDist_2D_ZeroCostDL4Mic.ipynb"
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 NOTEBOOK_NAME = "StarDist_2D_ZeroCostDL4Mic"
 REPOSITORY = "CellMigrationLab/Stardist2D"
 COLAB_PACKAGES = (
@@ -129,7 +129,7 @@ import sys
 if "google.colab" in sys.modules:
     packages = [
         {packages},
-        "git+https://github.com/{REPOSITORY}@v{VERSION}",
+        "git+https://github.com/{REPOSITORY}@{VERSION}",
     ]
     subprocess.run([sys.executable, "-m", "pip", "install", "-q", *packages], check=True)
     print("Installed: the runtime now restarts (section 1.2).")

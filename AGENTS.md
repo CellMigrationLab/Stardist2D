@@ -57,5 +57,6 @@ MorphoBricks repository, SHA-tested) and Ruff, against a shrink-only baseline th
 1. On a branch: set the new version in `setup.py`, `src/stardist2d/__init__.py` (`__version__`), `construct.yaml`
    (`version:` and the conclusion text) and `tools/build_notebook.py` (`VERSION`), run `python tools/build_notebook.py`,
    and give `CHANGELOG.md` a dated section. `tests/test_versions.py` fails while any of them differ. Merge it.
-2. Wait until no workflow is running, then publish a GitHub release with the tag `v<version>` (e.g. `v1.0.1`). The
-   Colab install cell installs the package from that tag; the release workflow strips the `v` and builds the installers.
+2. Wait until no workflow is running, then publish a GitHub release whose tag is the bare version (e.g. `1.0.1`, no
+   `v`): the template's download page links to `releases/download/<version>/`, and the Colab install cell installs the
+   package from that tag. The release workflow builds the installers.

@@ -77,7 +77,7 @@ if [ -f "$PROJECT_ROOT/setup.py" ]; then
     # Default source: the GitHub archive of the labconstrictor-tools release TAG below (a plain zip: no git needed on the user's computer),
     # because the package is not on PyPI yet. Once it is, use "labconstrictor-tools" here. To move the pin, change only this tag.
     LC_TOOLS_PIN="v0.3.0-alpha.1"
-    LC_TOOLS_MODULE="PYTHON_PROJ_NAME_lc_tools"
+    LC_TOOLS_MODULE="stardist2d_lc_tools"
     LC_TOOLS_READY=0
     if "$PYTHON_EXE" -c "import importlib.util, sys; sys.exit(0 if importlib.util.find_spec('$LC_TOOLS_MODULE') else 1)" >> "$LOG_FILE" 2>&1; then
         echo "Found $LC_TOOLS_MODULE: installing labconstrictor-tools before the import check of StarDist2D" >> "$LOG_FILE" || :
@@ -87,7 +87,7 @@ if [ -f "$PROJECT_ROOT/setup.py" ]; then
             echo "WARNING: labconstrictor-tools could not be installed - see the pip output above in this file; the tools of StarDist2D will not be registered (the import check below fails only if the package needs labconstrictor-tools at import time)." >> "$LOG_FILE" || :
         fi
     fi
-    "$PYTHON_EXE" -c "import PYTHON_PROJ_NAME; print('StarDist2D import successful:', PYTHON_PROJ_NAME.__file__)" >> "$LOG_FILE" 2>&1
+    "$PYTHON_EXE" -c "import stardist2d; print('StarDist2D import successful:', stardist2d.__file__)" >> "$LOG_FILE" 2>&1
 else
     echo "No setup.py detected; this project does not bundle an optional Python package." >> "$LOG_FILE"
 fi

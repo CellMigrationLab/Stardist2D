@@ -104,9 +104,9 @@ IF EXIST "%PROJECT_ROOT%\setup.py" (
     REM so labconstrictor-tools is installed BEFORE the import check below. A failed install is only a WARNING, see :install_lc_tools at the end of this file.
     CALL :install_lc_tools
 
-    "%PYTHON_EXE%" -c "import PYTHON_PROJ_NAME; print('StarDist2D import successful:', PYTHON_PROJ_NAME.__file__)" >> "%LOG_FILE%" 2>&1
+    "%PYTHON_EXE%" -c "import stardist2d; print('StarDist2D import successful:', stardist2d.__file__)" >> "%LOG_FILE%" 2>&1
     IF ERRORLEVEL 1 (
-        SET "FAILURE_MESSAGE=Installed StarDist2D package could not be imported as PYTHON_PROJ_NAME."
+        SET "FAILURE_MESSAGE=Installed StarDist2D package could not be imported as stardist2d."
         GOTO :fail
     )
 ) ELSE (
@@ -128,16 +128,16 @@ REM Napari, Fiji and QuPath list the app only in the hosts its hosts: line names
 REM registered without hosts (every host lists it) and the log says so (see the lines after "Found ... registering" below).
 SET "LC_APP_MANIFEST="
 IF EXIST "%PROJECT_ROOT%\labconstrictor-app.yaml" SET "LC_APP_MANIFEST=%PROJECT_ROOT%\labconstrictor-app.yaml"
-"%PYTHON_EXE%" -c "import importlib.util, sys; sys.exit(0 if importlib.util.find_spec('PYTHON_PROJ_NAME_lc_tools') else 1)" >> "%LOG_FILE%" 2>&1
+"%PYTHON_EXE%" -c "import importlib.util, sys; sys.exit(0 if importlib.util.find_spec('stardist2d_lc_tools') else 1)" >> "%LOG_FILE%" 2>&1
 IF NOT ERRORLEVEL 1 (
-    echo Found PYTHON_PROJ_NAME_lc_tools: registering the tools of StarDist2D for Napari and Fiji. >> "%LOG_FILE%"
+    echo Found stardist2d_lc_tools: registering the tools of StarDist2D for Napari and Fiji. >> "%LOG_FILE%"
     REM Which hosts list the app (the sentence is the one Tools uses for an app without hosts). Logged before the READY check, which sets the errorlevel.
     IF NOT DEFINED LC_APP_MANIFEST echo WARNING: labconstrictor-app.yaml was not found in "%PROJECT_ROOT%" ^(add it to extra_files in construct.yaml^), so StarDist2D is registered without hosts. 'StarDist2D' declares no hosts, so it is listed in every host; register it with --app-manifest ^(or --hosts^) to choose >> "%LOG_FILE%"
     IF DEFINED LC_APP_MANIFEST echo Passing the hosts of "%LC_APP_MANIFEST%" to Tools ^(--app-manifest^); Tools logs the same sentence if the file declares no hosts. >> "%LOG_FILE%"
     REM labconstrictor-tools was installed before the import check (:install_lc_tools): register only if that worked (errorlevel 1 otherwise).
     "%PYTHON_EXE%" -c "import sys; sys.exit(0 if sys.argv[1] == '1' else 1)" "%LC_TOOLS_READY%" >> "%LOG_FILE%" 2>&1
-    IF NOT ERRORLEVEL 1 IF DEFINED LC_APP_MANIFEST "%PYTHON_EXE%" -m labconstrictor_tools register --name "StarDist2D" --prefix "%PREFIX%" --module PYTHON_PROJ_NAME_lc_tools --version "%LC_APP_VERSION%" --display-name "StarDist2D" --app-manifest "%LC_APP_MANIFEST%" >> "%LOG_FILE%" 2>&1
-    IF NOT ERRORLEVEL 1 IF NOT DEFINED LC_APP_MANIFEST "%PYTHON_EXE%" -m labconstrictor_tools register --name "StarDist2D" --prefix "%PREFIX%" --module PYTHON_PROJ_NAME_lc_tools --version "%LC_APP_VERSION%" --display-name "StarDist2D" >> "%LOG_FILE%" 2>&1
+    IF NOT ERRORLEVEL 1 IF DEFINED LC_APP_MANIFEST "%PYTHON_EXE%" -m labconstrictor_tools register --name "StarDist2D" --prefix "%PREFIX%" --module stardist2d_lc_tools --version "%LC_APP_VERSION%" --display-name "StarDist2D" --app-manifest "%LC_APP_MANIFEST%" >> "%LOG_FILE%" 2>&1
+    IF NOT ERRORLEVEL 1 IF NOT DEFINED LC_APP_MANIFEST "%PYTHON_EXE%" -m labconstrictor_tools register --name "StarDist2D" --prefix "%PREFIX%" --module stardist2d_lc_tools --version "%LC_APP_VERSION%" --display-name "StarDist2D" >> "%LOG_FILE%" 2>&1
     IF ERRORLEVEL 1 echo WARNING: tool registration failed - see the pip and register output above in this file; StarDist2D itself is installed. >> "%LOG_FILE%"
 )
 
@@ -238,9 +238,9 @@ REM because the package is not on PyPI yet. Once it is, use "labconstrictor-tool
 SET "LC_TOOLS_PIN=v0.3.0-alpha.1"
 IF NOT DEFINED LC_TOOLS_SPEC SET "LC_TOOLS_SPEC=https://github.com/CellMigrationLab/LabConstrictor-Tools/archive/refs/tags/%LC_TOOLS_PIN%.zip"
 SET "LC_TOOLS_READY=0"
-"%PYTHON_EXE%" -c "import importlib.util, sys; sys.exit(0 if importlib.util.find_spec('PYTHON_PROJ_NAME_lc_tools') else 1)" >> "%LOG_FILE%" 2>&1
+"%PYTHON_EXE%" -c "import importlib.util, sys; sys.exit(0 if importlib.util.find_spec('stardist2d_lc_tools') else 1)" >> "%LOG_FILE%" 2>&1
 IF ERRORLEVEL 1 GOTO :EOF
-echo Found PYTHON_PROJ_NAME_lc_tools: installing labconstrictor-tools before the import check of StarDist2D. >> "%LOG_FILE%"
+echo Found stardist2d_lc_tools: installing labconstrictor-tools before the import check of StarDist2D. >> "%LOG_FILE%"
 REM LC_TOOLS_SPEC goes to pip as one argument through Python: cmd.exe never re-parses it (a quote or & in it cannot run anything).
 "%PYTHON_EXE%" -c "import os, subprocess, sys; sys.exit(subprocess.call([sys.executable, '-m', 'pip', 'install', os.environ['LC_TOOLS_SPEC']]))" >> "%LOG_FILE%" 2>&1
 IF ERRORLEVEL 1 (
