@@ -42,8 +42,17 @@ if you need speed. A model trained anywhere works everywhere for prediction.
 
 ## Credits
 
-StarDist: Schmidt, Weigert, Broaddus & Myers, MICCAI 2018. ZeroCostDL4Mic: von Chamier, Laine et al., Nature
-Communications 2021. The installer images use the StarDist logo (BSD 3-Clause, see [app/logo](app/logo/README.md)).
+**Please cite StarDist when you use this app:** Schmidt U., Weigert M., Broaddus C., Myers G. *Cell Detection with
+Star-Convex Polygons*. MICCAI 2018, Lecture Notes in Computer Science 11071, pp. 265–273,
+[doi:10.1007/978-3-030-00934-2_30](https://doi.org/10.1007/978-3-030-00934-2_30) (preprint:
+[arXiv:1806.03535](https://arxiv.org/abs/1806.03535)).
+
+Please also cite ZeroCostDL4Mic, the notebook this app is built on: von Chamier L., Laine R. F. et al. *Democratising
+deep learning for microscopy with ZeroCostDL4Mic*. Nature Communications 12, 2276 (2021),
+[doi:10.1038/s41467-021-22518-0](https://doi.org/10.1038/s41467-021-22518-0); and LabConstrictor, which packages it:
+Hidalgo-Cenalmor I. et al., [doi:10.48550/arXiv.2603.10704](https://doi.org/10.48550/arXiv.2603.10704).
+
+The installer images use the StarDist logo (BSD 3-Clause, see [app/logo](app/logo/README.md)).
 
 ## Documentation for StarDist2D's Developers
 

@@ -3,7 +3,20 @@
 StarDist2D is a LabConstrictor port of the ZeroCostDL4Mic StarDist 2D notebook, version 1.20.8.
 Every intentional difference from 1.20.8 is listed here under **Differences from ZeroCostDL4Mic 1.20.8**.
 
-## 1.0.3 (unreleased)
+## 1.0.4 (unreleased)
+
+### Changed
+- **Citing StarDist:**
+  - **Notebook introduction:** it cites the published StarDist paper, Schmidt *et al.*, *Cell Detection with
+    Star-Convex Polygons*, MICCAI 2018, LNCS 11071, pp. 265-273,
+    [doi:10.1007/978-3-030-00934-2_30](https://doi.org/10.1007/978-3-030-00934-2_30). 1.20.8 linked only the arXiv
+    preprint, which is kept as the preprint link. These are the only edits to 1.20.8's markdown text
+    (`TEXT_CHANGES` in `tools/build_notebook.py`, checked by `tests/test_notebook.py`).
+- **LabConstrictor website:** the app's "How to cite" DOI is the StarDist paper. The description asks users to cite
+  StarDist, ZeroCostDL4Mic and LabConstrictor.
+- **README:** the Credits section gives the full references.
+
+## 1.0.3 (2026-11-12, not released separately; included in 1.0.4)
 
 Corrections from an independent audit of 1.0.2. Each fix has a test (`tests/test_audit_fixes.py`, `tests/test_batch.py`).
 
