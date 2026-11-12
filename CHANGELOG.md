@@ -33,6 +33,9 @@ Every intentional difference from 1.20.8 is listed here under **Differences from
   label and probability, a per-object table. Prediction runs tile by tile with progress and Cancel; loaded models are
   cached. `labconstrictor-app.yaml` lists the app in the notebook, napari, Fiji and QuPath.
 - `lc_tests/cases.json`: the tools' test cases (`labconstrictor-tools test`), also run by pytest with a Cancel test.
+- Section 3.1 can also download nine StarDist datasets of the Cell Migration Lab from Zenodo (`stardist2d.datasets`:
+  HUVEC nuclei, brightfield neutrophils / monocytes / cancer cells 20x and 10x, fluorescent cells, AsPC1, MiaPaCa2,
+  tumour cell nuclei; CC BY 4.0), each with the model trained on it, and prints the paths to use in sections 3.2–6.
 - Parity tests that run the code of the vendored 1.20.8 notebook (`tests/reference/`) and compare.
 
 ### Differences from ZeroCostDL4Mic 1.20.8
