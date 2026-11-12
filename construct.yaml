@@ -1,5 +1,5 @@
 name: StarDist2D
-version: 1.1.0
+version: 1.1.1
 environment_file: environment.yaml
 installer_type: all
 license_file: LICENSE
@@ -7,7 +7,7 @@ license_file: LICENSE
 welcome_image: app/logo/stardist2d_banner.png
 header_image: app/logo/stardist2d_header.png
 icon_image: app/logo/stardist2d.png
-conclusion_text: Thank you! You have successfully installed StarDist2D 1.1.0.
+conclusion_text: Thank you! You have successfully installed StarDist2D 1.1.1.
 keep_pkgs: false
 register_python: false
 initialize_conda: false
