@@ -3,6 +3,16 @@
 StarDist2D is a LabConstrictor port of the ZeroCostDL4Mic StarDist 2D notebook, version 1.20.8.
 Every intentional difference from 1.20.8 is listed here under **Differences from ZeroCostDL4Mic 1.20.8**.
 
+## 1.0.1 (2026-11-12)
+
+### Fixed
+- **Installation failed on every system.** The installer's last step ran `import PYTHON_PROJ_NAME`: the repository
+  initialisation had left the template's placeholder for the package name in `post_install.sh` and `post_install.bat`.
+  They now check `stardist2d` and register `stardist2d_lc_tools`; the JupyterLab launcher's error messages name
+  StarDist2D. `tests/test_installer_scripts.py` fails if a placeholder is left in an installed script.
+- **Download links:** release tags are now the bare version (`1.0.1`, not `v1.0.1`), as the template's download page
+  expects. The Colab install cell installs from that tag.
+
 ## 1.0.0 (2026-11-12)
 
 First release: the ZeroCostDL4Mic StarDist 2D notebook 1.20.8 as a LabConstrictor app, with its code in the
