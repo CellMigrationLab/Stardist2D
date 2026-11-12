@@ -84,11 +84,20 @@ EXTRA_LOG = (
 )
 
 
+HIDDEN_CODE = {
+    "cellView": "form",
+    "collapsed": False,
+    "jupyter": {"source_hidden": True},
+    "jupyterlabHideCode": {"locked": True},
+}
+"""Code-cell metadata that the template's hide_code_cells.py sets (CI and the installer run it on every notebook)."""
+
+
 def _cell(cell_type: str, source: str) -> dict[str, object]:
     """Return a notebook cell (code cells hidden as Colab forms, no outputs)."""
     cell: dict[str, object] = {"cell_type": cell_type, "metadata": {}, "source": source.splitlines(keepends=True)}
     if cell_type == "code":
-        cell.update(execution_count=None, outputs=[], metadata={"cellView": "form"})
+        cell.update(execution_count=None, outputs=[], metadata=dict(HIDDEN_CODE))
     return cell
 
 
@@ -159,8 +168,15 @@ def build() -> dict[str, object]:
 
 
 def rendered() -> str:
-    """Return the notebook file's text (stable JSON, one cell field per line)."""
-    return json.dumps(build(), indent=1, ensure_ascii=False) + "\n"
+    """Return the notebook file's text exactly as nbformat writes it.
+
+    The template's hide_code_cells.py rewrites a notebook with nbformat whenever it changes a cell, so the file is
+    generated in that same form, with its metadata already set: the workflow then leaves it unchanged.
+    """
+    import nbformat
+
+    text = nbformat.writes(nbformat.from_dict(build()))
+    return text if text.endswith("\n") else text + "\n"
 
 
 def main() -> int:

@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
-from stardist2d import data, metrics, model, predict
+from stardist2d import metrics, model, predict
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -227,8 +227,3 @@ def tensorflow_checks() -> list[Check]:
             "Prediction runs on the CPU; train on a GPU machine or Colab.",
         )
     ]
-
-
-def example_folder() -> Path | None:
-    """Return the example images shipped with the app (for the tools' test cases)."""
-    return data.bundled_example_data()

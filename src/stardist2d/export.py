@@ -12,7 +12,7 @@ import os
 import tempfile
 from collections.abc import Callable, Iterable, Sequence
 from pathlib import Path
-from typing import Any, TextIO
+from typing import Any
 
 import numpy as np
 
@@ -86,11 +86,3 @@ def write_counts(path: Path, counts: Iterable[tuple[str, int]]) -> Path:
 def write_qc_table(path: Path, rows: Iterable[dict[str, Any]]) -> Path:
     """Write quality-control rows (:func:`stardist2d.metrics.qc_row`) with 1.20.8's header."""
     return _write_csv(path, [QC_COLUMNS, *([row[column] for column in QC_COLUMNS] for row in rows)])
-
-
-def print_table(rows: Sequence[dict[str, Any]], stream: TextIO) -> None:
-    """Print rows as the ``psql`` table 1.20.8 shows below the QC cell."""
-    import pandas as pd
-    from tabulate import tabulate
-
-    print(tabulate(pd.DataFrame(rows), headers="keys", tablefmt="psql"), file=stream)

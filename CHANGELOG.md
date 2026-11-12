@@ -3,7 +3,10 @@
 StarDist2D is a LabConstrictor port of the ZeroCostDL4Mic StarDist 2D notebook, version 1.20.8.
 Every intentional difference from 1.20.8 is listed here under **Differences from ZeroCostDL4Mic 1.20.8**.
 
-## Unreleased
+## 1.0.0 (2026-11-12)
+
+First release: the ZeroCostDL4Mic StarDist 2D notebook 1.20.8 as a LabConstrictor app, with its code in the
+`stardist2d` package and tools for Fiji, napari and QuPath.
 
 ### Added
 - MorphoBricks code standard: the shared `tools/code_rules.py`, `tools/check.py`, an empty baseline and
