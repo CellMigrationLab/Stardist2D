@@ -10,13 +10,13 @@ import sys
 from collections.abc import Sequence
 from pathlib import Path
 
-from stardist2d import batch, config, model, predict, provenance, qc, train
+from stardist2d import batch, config, model, model_catalogue, predict, provenance, qc, train
 from stardist2d import environment as env
 
 
 def _model_choice(arguments: argparse.Namespace) -> model.ModelChoice:
     """Return the model named on the command line (a pretrained name or a folder)."""
-    if arguments.model in model.PRETRAINED_MODELS:
+    if arguments.model in model.PRETRAINED_MODELS or model_catalogue.by_label(arguments.model):
         return model.ModelChoice(arguments.model)
     return model.ModelChoice(model.CUSTOM_MODEL, Path(arguments.model))
 
@@ -114,7 +114,8 @@ def parser() -> argparse.ArgumentParser:
     quality.add_argument("masks", type=Path)
     quality.set_defaults(run=run_qc)
     prediction = steps.add_parser("predict", help="predict a folder (sections 6.1-6.2)")
-    prediction.add_argument("model", help=f"a model folder or one of {model.PRETRAINED_MODELS}")
+    names = (*model.PRETRAINED_MODELS, *(entry.name for entry in model_catalogue.CATALOGUE))
+    prediction.add_argument("model", help=f"a model folder or one of {names}")
     prediction.add_argument("images", type=Path)
     prediction.add_argument("results", type=Path)
     prediction.add_argument("--kind", choices=("images", "stacks", "big"), default="images")

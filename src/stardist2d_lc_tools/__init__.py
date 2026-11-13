@@ -37,7 +37,20 @@ from labconstrictor_tools import (
     tool,
 )
 
-FluoModel = Literal["2D_versatile_fluo", "2D_paper_dsb2018", "Custom model folder"]
+CatalogueModels = Literal[
+    "CML: HUVEC nuclei (fluorescence)",
+    "CML: fluorescent cells",
+    "CML: AsPC1 cells, Lifeact (fluorescence)",
+    "CML: MiaPaCa2 cells, CD44 (fluorescence)",
+    "CML: tumour cell nuclei, DAPI (fluorescence)",
+    "CML: neutrophils (brightfield)",
+    "CML: monocytes (brightfield)",
+    "CML: cancer cells 20x (brightfield)",
+    "CML: cancer cells 10x (brightfield)",
+    "BMZ: CHO mitotic rounding (brightfield)",
+]
+"""The rehosted lab and Model Zoo models (stardist2d.model_catalogue; tests/test_model_catalogue.py checks the list)."""
+FluoModel = Literal["2D_versatile_fluo", "2D_paper_dsb2018", CatalogueModels, "Custom model folder"]
 RgbModel = Literal["2D_versatile_he", "Custom model folder"]
 
 ModelFolder = Annotated[
@@ -155,7 +168,7 @@ def segment_folder(
         Description("Existing folder for the label images, ROI zips and counts (never the input folder)"),
     ],
     model: Annotated[
-        Literal["2D_versatile_fluo", "2D_versatile_he", "2D_paper_dsb2018", "Custom model folder"],
+        Literal["2D_versatile_fluo", "2D_versatile_he", "2D_paper_dsb2018", CatalogueModels, "Custom model folder"],
         Group("Model"),
         Description("Pretrained model, or your own model folder"),
     ] = "2D_versatile_fluo",
@@ -203,7 +216,9 @@ def quality_control(
     return bridge.quality_control(image, ground_truth, bridge.ModelChoice(model, model_folder), iou_threshold)
 
 
-StartFrom = Literal["None", "2D_versatile_fluo", "2D_versatile_he", "2D_paper_dsb2018", "Own model folder"]
+StartFrom = Literal[
+    "None", "2D_versatile_fluo", "2D_versatile_he", "2D_paper_dsb2018", CatalogueModels, "Own model folder"
+]
 
 
 @tool("StarDist 2D: Train a model")

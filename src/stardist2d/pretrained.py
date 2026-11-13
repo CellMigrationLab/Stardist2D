@@ -9,20 +9,24 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+from stardist2d import model_catalogue
+
 PRETRAINED_CHOICES = (
     "Model_from_file",
     "BioImage Model Zoo",
     "2D_versatile_fluo_from_Stardist_Fiji",
     "2D_Demo_Model_from_Stardist_Github",
     "Versatile_H&E_nuclei",
+    *(entry.label for entry in model_catalogue.CATALOGUE),
 )
-"""The choices of section 3.4, as 1.20.8 names them."""
+"""The choices of section 3.4: 1.20.8's, then the rehosted lab and Model Zoo models (1.2.0)."""
 WEIGHTS_CHOICES = ("last", "best")
 
 REGISTERED = {
     "2D_Demo_Model_from_Stardist_Github": "2D_demo",
     "2D_versatile_fluo_from_Stardist_Fiji": "2D_versatile_fluo",
     "Versatile_H&E_nuclei": "2D_versatile_he",
+    **{entry.label: entry.name for entry in model_catalogue.CATALOGUE},
 }
 """Section 3.4 choice -> StarDist's registered pretrained model.
 
@@ -74,13 +78,10 @@ def _copy_registered(name: str, folder: Path) -> Path:
     """
     import shutil
 
-    from stardist2d.keras_backend import check_keras_backend
-
-    check_keras_backend()
-    from stardist.models import StarDist2D
+    from stardist2d import model
 
     try:
-        source = Path(StarDist2D.from_pretrained(name).logdir)
+        source = Path(model.from_registry(name).logdir)
     except Exception as problem:  # Keras' get_file wraps every download failure in a plain Exception
         raise RuntimeError(
             f"the pretrained model {name} could not be downloaded ({problem}). Download it from "

@@ -28,6 +28,28 @@
   }
  },
  {
+  "tool": "segment_fluorescence",
+  "inputs": {
+   "image": "fixtures/nuclei.tif",
+   "model": "CML: HUVEC nuclei (fluorescence)"
+  },
+  "expect": {
+   "results": {
+    "stardist_labels": {
+     "shape": [
+      384,
+      384
+     ],
+     "dtype": "uint16"
+    },
+    "summary": {
+     "contains": "please cite doi:10.5281/zenodo.10617532"
+    }
+   },
+   "max_seconds": 300
+  }
+ },
+ {
   "tool": "segment_rgb",
   "inputs": {
    "image": "fixtures/he.tif"

@@ -4,18 +4,35 @@ from __future__ import annotations
 
 from typing import Any
 
-from stardist2d import batch, model, plotting, predict, prepare
+from stardist2d import batch, model, model_catalogue, plotting, predict, prepare
 from stardist2d.notebook.forms import Field, Form, message, show_figure
 from stardist2d.notebook.session import Session
+
+PRETRAINED_FIELD = "Pretrained_model"
+NO_PRETRAINED = "None (use the model above)"
+PRETRAINED_OPTIONS = (NO_PRETRAINED, *model.PRETRAINED_MODELS, *(entry.label for entry in model_catalogue.CATALOGUE))
+"""Section 6's model choice (1.2.0): the trained or typed-in model, or a StarDist / lab / Model Zoo pretrained model."""
+
+
+def _prediction_model(session: Session, values: dict[str, Any]) -> model.StarDist2D:
+    """Return the model section 6 predicts with, and say which one (with what to cite for a catalogue model)."""
+    choice = values[PRETRAINED_FIELD]
+    if choice != NO_PRETRAINED:
+        message(f"The pretrained model {choice} will be used.")
+        cite = model_catalogue.citation(choice)
+        if cite:
+            message(cite)
+        return model.load_model(model.ModelChoice(choice))
+    folder = session.model_from_choice(values["Use_the_current_trained_model"], values["Prediction_model_folder"])
+    message(f"The {folder.name} network will be used.")
+    return model.load_model_folder(folder)
 
 
 def predictions(session: Session) -> Form:
     """Section 6.1: predict a folder of single images or stacks and write labels, ROIs and counts (cell 41)."""
 
     def run(values: dict[str, Any]) -> None:
-        folder = session.model_from_choice(values["Use_the_current_trained_model"], values["Prediction_model_folder"])
-        message(f"The {folder.name} network will be used.")
-        star_dist = model.load_model_folder(folder)
+        star_dist = _prediction_model(session, values)
         images, results = session.path(values["Data_folder"]), session.path(values["Results_folder"])
         rois = values["Region_of_interests"]
         hooks = predict.Hooks(progress=lambda fraction, text: print(f"{text}", flush=True))
@@ -44,6 +61,7 @@ def predictions(session: Session) -> Form:
         Field("Region_of_interests", True, "bool", help="Also write ImageJ ROI zips (Fiji ROI Manager)"),
         Field("Use_the_current_trained_model", True, "bool"),
         Field("Prediction_model_folder", ""),
+        Field(PRETRAINED_FIELD, NO_PRETRAINED, "choice", PRETRAINED_OPTIONS, help="Or predict with a pretrained model"),
     ]
     return Form("Generate prediction(s) from unseen dataset", fields, run, "Predict").show()
 
@@ -52,7 +70,6 @@ def big_data_predictions(session: Session) -> Form:
     """Section 6.2: predict very large images block by block (cell 43)."""
 
     def run(values: dict[str, Any]) -> None:
-        folder = session.model_from_choice(values["Use_the_current_trained_model"], values["Prediction_model_folder"])
         if values["block_size_Y"] != values["block_size_X"]:
             raise ValueError("block_size_Y and block_size_X must be equal in this version")
         settings = batch.BigImageSettings(
@@ -64,7 +81,7 @@ def big_data_predictions(session: Session) -> Form:
             region_of_interests=values["Region_of_interests"],
         )
         done = batch.predict_big_folder(
-            model.load_model_folder(folder),
+            _prediction_model(session, values),
             session.path(values["Data_folder"]),
             session.path(values["Results_folder"]),
             settings,
@@ -76,6 +93,7 @@ def big_data_predictions(session: Session) -> Form:
         Field("Results_folder", ""),
         Field("Use_the_current_trained_model", True, "bool"),
         Field("Prediction_model_folder", ""),
+        Field(PRETRAINED_FIELD, NO_PRETRAINED, "choice", PRETRAINED_OPTIONS, help="Or predict with a pretrained model"),
         Field("block_size_Y", 512, "int"),
         Field("block_size_X", 512, "int"),
         Field("min_overlap", 50, "int"),

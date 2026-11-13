@@ -15,7 +15,12 @@ pytestmark = pytest.mark.slow
 
 
 def _tools(*arguments: str) -> subprocess.CompletedProcess[str]:
-    environment = {**os.environ, "PYTHONPATH": str(ROOT / "src"), "TF_CPP_MIN_LOG_LEVEL": "3"}
+    environment = {
+        **os.environ,
+        "PYTHONPATH": str(ROOT / "src"),
+        "TF_CPP_MIN_LOG_LEVEL": "3",
+        "STARDIST2D_MODELS_URL": (ROOT / "models").as_uri() + "/",  # the catalogue models of this checkout
+    }
     command = [sys.executable, "-m", "labconstrictor_tools", *arguments, "--module", "stardist2d_lc_tools"]
     return subprocess.run(command, cwd=ROOT, capture_output=True, text=True, env=environment, timeout=1500)
 
