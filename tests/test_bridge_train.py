@@ -124,3 +124,25 @@ def test_quality_control_on_a_folder(tmp_path, training_folders, pretrained_fold
     table, summary = bridge_train.quality_control_folder(model, images, masks, 0.5)
     assert len(table) == 4 and "mean F1" in summary
     assert (model / "Quality Control" / "Quality_Control for versatile.csv").is_file()
+
+
+def test_progress_is_reported_within_an_epoch_at_most_once_a_second(monkeypatch):
+    """A long CPU epoch must not look frozen (tester report, 1.1.1); fast batches must not flood the host."""
+    clock = iter([0.0, 0.5, 1.2, 1.3, 2.5])
+    monkeypatch.setattr(bridge_train.time, "monotonic", lambda: next(clock))
+    reports, cancels = [], []
+    reporter = bridge_train._TrainingProgress(
+        2, 4, lambda f, m: reports.append((round(f, 3), m)), lambda: cancels.append(1)
+    )
+    for _ in range(4):
+        reporter.batch_done()
+    reporter.epoch_done(0, {"loss": 1.5, "val_loss": 1.25, "lr": 0.0003})
+    reporter.batch_done()
+    assert len(cancels) == 5
+    assert [m for _, m in reports] == [
+        "epoch 1/2, step 1/4",
+        "epoch 1/2, step 3/4",
+        "epoch 1/2: loss 1.5000, val_loss 1.2500",
+        "epoch 2/2, step 1/4 (epoch 1: loss 1.5000, val_loss 1.2500)",
+    ]
+    assert reporter.history["learning_rate"] == [0.0003]

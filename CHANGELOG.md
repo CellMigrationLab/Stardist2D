@@ -22,6 +22,8 @@ Fixes from the first human tests (Windows, notebook and Fiji).
   for a widget callback.
 - **Train a model (tools):** a low validation F1 (below 0.5) comes with advice: more epochs, or start from
   `2D_versatile_fluo`.
+- **Train a model (tools):** progress within each epoch ("epoch 2/5, step 7/16", at most once a second), not only
+  after it: on a CPU an epoch can take minutes, and the hosts looked frozen in between.
 - **Versions:** 1.1.1 was released from `main` without the version step, so only `construct.yaml` and `setup.py`
   said 1.1.1. Everything says 1.1.2 again.
 
