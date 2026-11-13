@@ -6,6 +6,7 @@ bridge, the notebook) can show progress and cancel between tiles.
 
 from __future__ import annotations
 
+import shutil
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -146,6 +147,11 @@ def predict_big(
     """Predict a very large YX or YXC image block by block through zarr (cell 43, ``predict_img``)."""
     import zarr
 
+    if min(image.shape[:2]) < block_size:
+        raise ValueError(
+            f"the image ({image.shape[0]} x {image.shape[1]} pixels) is smaller than block_size {block_size}: choose a "
+            "smaller block_size, or predict it with section 6.1 (it is not a very large image)"
+        )
     low_value, high_value = big_image_range(image, prepare.LOW_PERCENTILE, prepare.HIGH_PERCENTILE)
     normalizer = _FixedRangeNormalizer(low_value, high_value)
     if image.ndim == 2:
@@ -154,8 +160,12 @@ def predict_big(
         axes, blocks = "YXC", (block_size, block_size, image.shape[-1])
         overlap, tiles = (min_overlap, min_overlap, 0), (*n_tiles, 1)
     workdir.mkdir(parents=True, exist_ok=True)
-    zarr.save_array(str(workdir / "image.zarr"), image)
-    stored = zarr.open(str(workdir / "image.zarr"), mode="r")
+    # One temporary array per call: the frames of a stack and the images of a folder reuse the same workdir, and
+    # zarr refuses to write over an existing array (tester report, 1.1.1: the second frame of a stack failed).
+    store = workdir / "image.zarr"
+    shutil.rmtree(store, ignore_errors=True)
+    zarr.save_array(str(store), image)
+    stored = zarr.open(str(store), mode="r")
     return model.predict_instances_big(
         stored,
         axes=axes,

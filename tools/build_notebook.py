@@ -16,7 +16,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 REFERENCE = ROOT / "tests" / "reference" / "StarDist_2D_ZeroCostDL4Mic_1.20.8.ipynb"
 NOTEBOOK = ROOT / "notebooks" / "StarDist_2D" / "StarDist_2D_ZeroCostDL4Mic.ipynb"
-VERSION = "1.1.0"
+VERSION = "1.1.2"
 NOTEBOOK_NAME = "StarDist_2D_ZeroCostDL4Mic"
 REPOSITORY = "CellMigrationLab/Stardist2D"
 COLAB_PACKAGES = (
@@ -50,7 +50,10 @@ STEPS = {
     41: "notebook.predictions(session)",
     43: "notebook.big_data_predictions(session)",
 }
-"""Original code cell index -> its replacement (the install cell 5 is written by :func:`install_cell`)."""
+"""Original code cell index -> its replacement (the install cell 5 is written by :func:`install_cell`).
+
+Each cell ends with ';' so that Jupyter does not print the returned form ("Form(title=...)") under it (tester
+report, 1.1.1)."""
 
 TITLES = {
     20: "Setting main training parameters",
@@ -188,7 +191,7 @@ def build() -> dict[str, object]:
         code = (
             install_cell()
             if index == 5
-            else f"# @title {TITLES.get(index) or title_of(source, 'Run this cell')}\n{STEPS[index]}\n"
+            else f"# @title {TITLES.get(index) or title_of(source, 'Run this cell')}\n{STEPS[index]};\n"
         )
         cells.append(_cell("code", code))
     metadata = {

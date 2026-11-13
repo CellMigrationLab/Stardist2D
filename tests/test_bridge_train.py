@@ -63,6 +63,8 @@ def test_training_writes_the_notebook_outputs_and_tables(tmp_path, training_fold
     assert list(curve.columns) == ["epoch", "loss", "val_loss", "learning_rate"] and len(curve) == 1
     assert len(quality) == 1 and "f1 score" in quality.columns
     assert "**tiny**" in summary and str(folder) in summary
+    if quality["f1 score"].mean() < bridge_train.LOW_F1:  # 1 epoch from scratch: the summary says what to do
+        assert "train for more epochs" in summary and "2D_versatile_fluo" in summary
     for name in ("config.json", "thresholds.json", "weights_best.h5", "Quality Control/training_evaluation.csv"):
         assert (folder / name).is_file(), name
     run = json.loads((folder / "stardist2d_run.json").read_text())

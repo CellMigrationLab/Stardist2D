@@ -34,6 +34,8 @@ CPU_NOTE = (
     "Training runs on the CPU on this computer: expect minutes per epoch. For long trainings use the notebook on "
     "Google Colab, or a Linux computer with an NVIDIA GPU."
 )
+LOW_F1 = 0.5
+"""Below this validation F1 the training summary suggests more epochs or a pretrained start."""
 _MODEL_NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9._ -]{0,99}")
 
 
@@ -194,11 +196,16 @@ def _training_tables(
     )
     quality = pd.DataFrame(validation, columns=list(metrics.QC_COLUMNS))
     hours, minutes, seconds = train.elapsed(result.seconds)
+    f1 = float(quality["f1 score"].mean())
     summary = (
         f"Model **{target.name}** trained for {len(curve)} epochs in {hours} h {minutes} min {seconds} s ({note}). "
-        f"Validation F1 **{quality['f1 score'].mean():.3f}** (IoU 0.5). Use it with Model = 'Custom model folder' "
-        f"and model folder = {target}"
+        f"Validation F1 **{f1:.3f}** (IoU 0.5). Use it with Model = 'Custom model folder' and model folder = {target}"
     )
+    if f1 < LOW_F1:  # a model trained from scratch for a few epochs finds almost nothing (tester report, 1.1.1)
+        summary += (
+            ". The validation F1 is low: train for more epochs (often 100 or more from scratch), or start from "
+            "2D_versatile_fluo, which needs only a few"
+        )
     return curve, quality, summary
 
 

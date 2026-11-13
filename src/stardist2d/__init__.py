@@ -11,7 +11,7 @@ from stardist2d.keras_backend import use_legacy_keras
 
 use_legacy_keras()
 
-__version__ = "1.1.0"
+__version__ = "1.1.2"
 """Package version; moves with the notebook's ``current_version`` and the release tag."""
 
 __all__ = ["__version__"]

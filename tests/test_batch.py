@@ -102,6 +102,31 @@ def test_big_image_outputs(tmp_path, model, nuclei):
     assert (tmp_path / "out" / "slidelabels_roi.zip").is_file()
 
 
+def test_big_image_stacks_and_folders_of_several_images(tmp_path, model, nuclei):
+    """Every frame of a stack and every image of a folder gets its own temporary array (1.1.1 failed on the 2nd)."""
+    images = tmp_path / "big"
+    images.mkdir()
+    tifffile.imwrite(images / "movie.tif", np.stack([np.tile(nuclei, (4, 4))] * 2))
+    assert batch.predict_big_folder(model, images, tmp_path / "out", batch.BigImageSettings()) == ["movie.tif"]
+    frames = sorted((tmp_path / "out" / "movie").iterdir())
+    assert [f.name for f in frames] == ["frame_00000.tif", "frame_00001.tif"]
+    assert all(tifffile.imread(f).max() > 10 for f in frames)
+    singles = tmp_path / "singles"
+    singles.mkdir()
+    for name in ("a.tif", "b.tif"):
+        tifffile.imwrite(singles / name, np.tile(nuclei, (4, 4)))
+    settings = batch.BigImageSettings(is_stack=False)
+    assert batch.predict_big_folder(model, singles, tmp_path / "out2", settings) == ["a.tif", "b.tif"]
+
+
+def test_a_big_image_smaller_than_a_block_is_refused(tmp_path, model, nuclei):
+    images = tmp_path / "small"
+    images.mkdir()
+    tifffile.imwrite(images / "small.tif", nuclei)
+    with pytest.raises(ValueError, match="smaller than block_size 512"):
+        batch.predict_big_folder(model, images, tmp_path / "out", batch.BigImageSettings(is_stack=False))
+
+
 def test_big_image_settings_are_checked():
     with pytest.raises(ValueError, match="twice min_overlap"):
         batch.BigImageSettings(block_size=64, min_overlap=40)
