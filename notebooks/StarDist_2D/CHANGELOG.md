@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.1.1] - 2026-11-13
+
+### Changed
+- Version updated from 1.1.0 to 1.1.1
+
+**Commit Details:**
+- Hash: [`bb6a6d49`](https://github.com/CellMigrationLab/Stardist2D/commit/bb6a6d497359097811187402341356f5a3d012ce)
+- Author: Iván Hidalgo
+- Date: 2026-11-13 13:15:41 +0200
+- Message: Avoid "Form(..." printing when running cells.
+
+---
 ## [1.1.0] - 2026-11-12
 
 ### Changed
