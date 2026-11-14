@@ -3,7 +3,17 @@
 StarDist2D is a LabConstrictor port of the ZeroCostDL4Mic StarDist 2D notebook, version 1.20.8.
 Every intentional difference from 1.20.8 is listed here under **Differences from ZeroCostDL4Mic 1.20.8**.
 
-## 1.2.0 (unreleased)
+## 1.2.1 (2026-11-14)
+
+### Changed
+- **The app says which plugin versions it needs** (`host_requirements` in `labconstrictor-app.yaml`, LabConstrictor-Tools
+  #155): LabConstrictor-napari 0.1.0-alpha.5, LabConstrictor-Fiji 0.1.0-alpha.7 (progress of long trainings in the Log
+  window) and LabConstrictor-QuPath 0.1.0-alpha.7 (Replace keeps your own annotations). The installer registers it; a
+  plugin that checks it and is older tells the person to update, and the app page on the LabConstrictor website lists
+  the versions.
+- Template 0.1.28: the installer installs LabConstrictor-Tools v0.3.0-alpha.2 (it registers the requirements above).
+
+## 1.2.0 (2026-11-14)
 
 ### Added
 - **Ten more pretrained models**, in every model list:
