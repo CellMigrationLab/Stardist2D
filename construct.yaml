@@ -66,6 +66,7 @@ extra_files:
 - src/stardist2d/keras_backend.py: StarDist2D/src/stardist2d/keras_backend.py
 - src/stardist2d/metrics.py: StarDist2D/src/stardist2d/metrics.py
 - src/stardist2d/model.py: StarDist2D/src/stardist2d/model.py
+- src/stardist2d/model_catalogue.py: StarDist2D/src/stardist2d/model_catalogue.py
 - src/stardist2d/notebook/__init__.py: StarDist2D/src/stardist2d/notebook/__init__.py
 - src/stardist2d/notebook/evaluation_steps.py: StarDist2D/src/stardist2d/notebook/evaluation_steps.py
 - src/stardist2d/notebook/forms.py: StarDist2D/src/stardist2d/notebook/forms.py
