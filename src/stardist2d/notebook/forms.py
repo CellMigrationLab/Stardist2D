@@ -83,17 +83,25 @@ class Form:
         return self
 
     def run(self) -> bool:
-        """Run the step with the current values; show expected problems as one line. Return success."""
+        """Run the step with the current values; show expected problems as one line. Return success.
+
+        While the step runs, the button is disabled and reads "Running…": JupyterLab's kernel indicator does not
+        always turn busy for a widget callback (tester report, 1.1.1), and a second click must not start it twice.
+        """
         self.output.clear_output()
-        with self.output:
-            try:
-                self.action(self.values())
-            except EXPECTED_PROBLEMS as problem:
-                display(widgets.HTML(f"<b style='color:#b00020'>⚠ {problem}</b>"))
-                self.succeeded = False
-                return False
-        self.succeeded = True
-        return True
+        self.button.disabled, self.button.description, self.button.icon = True, "Running…", "hourglass-half"
+        try:
+            with self.output:
+                try:
+                    self.action(self.values())
+                except EXPECTED_PROBLEMS as problem:
+                    display(widgets.HTML(f"<b style='color:#b00020'>⚠ {problem}</b>"))
+                    self.succeeded = False
+                    return False
+            self.succeeded = True
+            return True
+        finally:
+            self.button.disabled, self.button.description, self.button.icon = False, self.button_label, "play"
 
     def box(self) -> widgets.VBox:
         """Return the form as one widget."""

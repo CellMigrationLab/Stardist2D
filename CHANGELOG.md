@@ -3,6 +3,30 @@
 StarDist2D is a LabConstrictor port of the ZeroCostDL4Mic StarDist 2D notebook, version 1.20.8.
 Every intentional difference from 1.20.8 is listed here under **Differences from ZeroCostDL4Mic 1.20.8**.
 
+## 1.1.2 (unreleased)
+
+Fixes from the first human tests (Windows, notebook and Fiji).
+
+### Fixed
+- **Section 6.2, stacks and folders of big images:** the second frame of a stack (and the second image of a folder)
+  failed with "array already exists": every frame was written to the same temporary zarr array. Each prediction now
+  gets a fresh one. An image smaller than `block_size` is refused with what to do (StarDist raised a bare
+  `AssertionError`).
+- **Section 3.4, pretrained models:** the demo, versatile fluorescence and H&E models could not be downloaded; the
+  1.20.8 addresses (cloud.mpi-cbg.de, the old mpicbg-csbd GitHub path) no longer serve them. They now come from the
+  StarDist team's stardist-models releases through `StarDist2D.from_pretrained`, checked against StarDist's
+  SHA-256. These archives hold only `weights_best.h5`, so "last" weights load the best weights for them. A failed
+  download says where to get the model by hand.
+- **Notebook:** the forms no longer print "Form(title=...)" under their cell (each step cell ends with `;`), and a
+  running step shows "Running…" on its disabled button, since JupyterLab's busy indicator does not always turn on
+  for a widget callback.
+- **Train a model (tools):** a low validation F1 (below 0.5) comes with advice: more epochs, or start from
+  `2D_versatile_fluo`.
+- **Train a model (tools):** progress within each epoch ("epoch 2/5, step 7/16", at most once a second), not only
+  after it: on a CPU an epoch can take minutes, and the hosts looked frozen in between.
+- **Versions:** 1.1.1 was released from `main` without the version step, so only `construct.yaml` and `setup.py`
+  said 1.1.1. Everything says 1.1.2 again.
+
 ## 1.1.0 (2026-11-12)
 
 ### Added

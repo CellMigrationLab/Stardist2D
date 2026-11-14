@@ -162,26 +162,24 @@ def test_an_archive_missing_a_part_or_cut_short_is_refused(tmp_path):
     assert not (tmp_path / entry.record).exists()
 
 
-# --- 16. pretrained-model downloads are complete and contain a model
-def test_a_short_model_download_leaves_nothing(tmp_path):
-    with mock.patch("requests.get", return_value=_Response(b"abc", announced=10)):
-        with pytest.raises(RuntimeError, match="stopped after"):
-            pretrained._download("https://example.org/m.zip", tmp_path / "m.zip", 5)
-    assert list(tmp_path.iterdir()) == []
+# --- 16 (revised in 1.1.2). section 3.4's pretrained models come from StarDist's checksum-verified registry
+@pytest.mark.slow
+def test_section_3_4_models_come_from_the_stardist_registry(tmp_path):
+    folder = pretrained.fetch_model_folder("2D_versatile_fluo_from_Stardist_Fiji", tmp_path)
+    assert folder == tmp_path / "2D_versatile_fluo"
+    assert sorted(p.name for p in folder.iterdir()) == ["config.json", "thresholds.json", "weights_best.h5"]
+    assert pretrained.weights_file("2D_Demo_Model_from_Stardist_Github", folder, "last").name == "weights_best.h5"
 
 
-def test_an_archive_without_a_model_is_refused(tmp_path):
-    archive = tmp_path / "m.zip"
-    with zipfile.ZipFile(archive, "w") as handle:
-        handle.writestr("readme.txt", "no model")
-    with pytest.raises(RuntimeError, match="does not contain a StarDist model"):
-        pretrained._unpack(archive, tmp_path / "model")
-    with zipfile.ZipFile(archive, "w") as handle:
-        handle.writestr("config.json", "{}")
-        handle.writestr("weights_best.h5", "w")
-    (tmp_path / "model").mkdir()
-    pretrained._unpack(archive, tmp_path / "model")
-    assert sorted(p.name for p in (tmp_path / "model").iterdir()) == ["config.json", "weights_best.h5"]
+def test_a_failed_registry_download_says_where_to_get_the_model(tmp_path, monkeypatch):
+    from stardist.models import StarDist2D
+
+    def offline(name):
+        raise Exception("URL fetch failure")
+
+    monkeypatch.setattr(StarDist2D, "from_pretrained", staticmethod(offline))
+    with pytest.raises(RuntimeError, match="stardist-models/releases"):
+        pretrained.fetch_model_folder("Versatile_H&E_nuclei", tmp_path)
 
 
 # --- 10. Keras 3 already loaded is refused, whatever the environment variable says

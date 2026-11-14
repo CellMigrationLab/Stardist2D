@@ -14,6 +14,8 @@ with StarDist's default thresholds; its run file says where training stopped.
 from __future__ import annotations
 
 import re
+import time
+from collections.abc import Callable
 from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
@@ -34,6 +36,8 @@ CPU_NOTE = (
     "Training runs on the CPU on this computer: expect minutes per epoch. For long trainings use the notebook on "
     "Google Colab, or a Linux computer with an NVIDIA GPU."
 )
+LOW_F1 = 0.5
+"""Below this validation F1 the training summary suggests more epochs or a pretrained start."""
 _MODEL_NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9._ -]{0,99}")
 
 
@@ -141,25 +145,57 @@ def train_model(request: TrainingRequest) -> tuple[pd.DataFrame, pd.DataFrame, s
     training, star_dist, note = _prepare(request, target)
     epochs = training.settings.number_of_epochs
     inputs = [path for pair in data.training_pairs(Path(request.images), Path(request.masks)) for path in pair]
-    history: dict[str, list[float]] = {"loss": [], "val_loss": [], "learning_rate": []}
     _run_record(target, request, inputs, "started; no epoch finished")
+    reporter = _TrainingProgress(epochs, training.steps_per_epoch, progress, check_cancel)
 
     def on_epoch(epoch: int, logs: dict[str, float]) -> None:
-        for key in history:
-            history[key].append(float(logs.get(key, logs.get("lr", float("nan")))))
-        train.write_training_evaluation(target, history)
+        reporter.epoch_done(epoch, logs)
+        train.write_training_evaluation(target, reporter.history)
         _run_record(target, request, inputs, f"stopped after epoch {epoch + 1} of {epochs}; thresholds not optimised")
-        progress(
-            0.9 * (epoch + 1) / epochs,
-            f"epoch {epoch + 1}/{epochs}: loss {history['loss'][-1]:.4f}, val_loss {history['val_loss'][-1]:.4f}",
-        )
 
-    result = train.train(star_dist, training, epochs, request.use_augmentation, on_epoch, check_cancel)
+    result = train.train(star_dist, training, epochs, request.use_augmentation, on_epoch, reporter.batch_done)
     train.write_training_evaluation(target, result.history)
     progress(0.95, "quality control on the validation images")
     validation = validation_quality(result.model, training.split)
     _run_record(target, request, inputs, f"finished: {epochs} epochs, thresholds optimised")
     return _training_tables(result, validation, target, note)
+
+
+class _TrainingProgress:
+    """Progress of a training for the hosts: after every epoch (with its losses) and within an epoch (its steps).
+
+    Steps are reported at most once a second: on a CPU an epoch can take minutes, and a host that shows nothing
+    for that long looks frozen (tester report, 1.1.1); on a GPU, batches are too fast to report each. Every batch
+    also checks Cancel (``check_cancel`` raises to stop training at once).
+    """
+
+    def __init__(
+        self, epochs: int, steps: int, progress: Callable[[float, str], None], check_cancel: Callable[[], None]
+    ) -> None:
+        self.epochs, self.steps, self.progress, self.check_cancel = epochs, max(steps, 1), progress, check_cancel
+        self.history: dict[str, list[float]] = {"loss": [], "val_loss": [], "learning_rate": []}
+        self.epoch, self.step, self.last_report, self.losses = 0, 0, float("-inf"), ""
+
+    def batch_done(self) -> None:
+        """Count a batch, check Cancel and report the step when a second has passed since the last report."""
+        self.check_cancel()
+        self.step += 1
+        now = time.monotonic()
+        if now - self.last_report >= 1.0:
+            self.last_report = now
+            done = (self.epoch + min(self.step, self.steps) / self.steps) / self.epochs
+            self.progress(
+                0.9 * done, f"epoch {self.epoch + 1}/{self.epochs}, step {self.step}/{self.steps}{self.losses}"
+            )
+
+    def epoch_done(self, epoch: int, logs: dict[str, float]) -> None:
+        """Record the epoch's losses and report them."""
+        for key in self.history:
+            self.history[key].append(float(logs.get(key, logs.get("lr", float("nan")))))
+        self.epoch, self.step = epoch + 1, 0
+        losses = f"loss {self.history['loss'][-1]:.4f}, val_loss {self.history['val_loss'][-1]:.4f}"
+        self.losses = f" (epoch {epoch + 1}: {losses})"
+        self.progress(0.9 * self.epoch / self.epochs, f"epoch {epoch + 1}/{self.epochs}: {losses}")
 
 
 def validation_quality(star_dist: StarDist2D, split: TrainingSplit) -> list[dict[str, Any]]:
@@ -194,11 +230,16 @@ def _training_tables(
     )
     quality = pd.DataFrame(validation, columns=list(metrics.QC_COLUMNS))
     hours, minutes, seconds = train.elapsed(result.seconds)
+    f1 = float(quality["f1 score"].mean())
     summary = (
         f"Model **{target.name}** trained for {len(curve)} epochs in {hours} h {minutes} min {seconds} s ({note}). "
-        f"Validation F1 **{quality['f1 score'].mean():.3f}** (IoU 0.5). Use it with Model = 'Custom model folder' "
-        f"and model folder = {target}"
+        f"Validation F1 **{f1:.3f}** (IoU 0.5). Use it with Model = 'Custom model folder' and model folder = {target}"
     )
+    if f1 < LOW_F1:  # a model trained from scratch for a few epochs finds almost nothing (tester report, 1.1.1)
+        summary += (
+            ". The validation F1 is low: train for more epochs (often 100 or more from scratch), or start from "
+            "2D_versatile_fluo, which needs only a few"
+        )
     return curve, quality, summary
 
 

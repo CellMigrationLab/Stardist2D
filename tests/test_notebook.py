@@ -133,3 +133,32 @@ def test_the_notebook_executes_in_a_kernel(tmp_path, monkeypatch):
     NotebookClient(book, timeout=600, kernel_name="python3", resources={"metadata": {"path": str(tmp_path)}}).execute()
     errors = [o for c in book.cells if c.cell_type == "code" for o in c.outputs if o.output_type == "error"]
     assert errors == []
+
+
+def test_step_cells_end_with_a_semicolon():
+    """Jupyter would print the returned form ("Form(title=...)") under a cell without it (tester report, 1.1.1)."""
+    steps = [cell for cell in _cells() if cell["cell_type"] == "code" and "notebook." in "".join(cell["source"])]
+    assert steps and all("".join(cell["source"]).rstrip().endswith(";") for cell in steps)
+
+
+def test_a_running_form_shows_it_and_cannot_be_started_twice():
+    from stardist2d.notebook.forms import Field, Form
+
+    seen = []
+    def record(values):
+        seen.append((form.button.disabled, form.button.description))
+
+    form = Form("Step", [Field("x", 1, "int")], record)
+    assert form.run() and seen == [(True, "Running…")]
+    assert not form.button.disabled and form.button.description == "Run"
+
+
+def test_a_failing_form_gives_its_button_back():
+    from stardist2d.notebook.forms import Form
+
+    def fail(values):
+        raise ValueError("bad folder")
+
+    form = Form("Step", [], fail)
+    assert not form.run() and not form.button.disabled and form.button.description == "Run"
+
