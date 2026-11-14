@@ -10,7 +10,7 @@ Choose your operating system and follow the instructions below to install StarDi
 
 ## 1. Click the button to download StarDist2D executable
 
-<a href="https://github.com/CellMigrationLab/Stardist2D/releases/download/1.2.0/StarDist2D-1.2.0-Windows-x86_64.exe">
+<a href="https://github.com/CellMigrationLab/Stardist2D/releases/download/1.2.1/StarDist2D-1.2.1-Windows-x86_64.exe">
     <img src="https://img.shields.io/badge/Download%20for%20Windows-Latest-blue?logo=windows&style=for-the-badge" alt="Download for Windows" width="250">
 </a>
 
@@ -48,7 +48,7 @@ Then, start using it following the instructions on the [Usage of Notebooks After
 
 ## 1. Click the button to download StarDist2D executable
 
-<a href="https://github.com/CellMigrationLab/Stardist2D/releases/download/1.2.0/StarDist2D-1.2.0-Linux-x86_64.sh">
+<a href="https://github.com/CellMigrationLab/Stardist2D/releases/download/1.2.1/StarDist2D-1.2.1-Linux-x86_64.sh">
     <img src="https://img.shields.io/badge/Download%20for%20Linux-Latest-green?logo=linux&style=for-the-badge" alt="Download for Linux" width="250">
 </a>
 
@@ -61,7 +61,7 @@ Then, start using it following the instructions on the [Usage of Notebooks After
 2.- Copy and paste the following command:
 
 ```bash
-bash StarDist2D-1.2.0-Linux-x86_64.sh
+bash StarDist2D-1.2.1-Linux-x86_64.sh
 ```
 
 3.- Click Enter to run the command.
@@ -108,7 +108,7 @@ First of all, you will need to choose whether you want to install it with **(A) 
 > 2. Select About This Mac.
 > 3. A window will pop up displaying your Mac’s information. Look into the `Chip` or `Processor` field. If `Intel` is mentioned, then download the Intel option. Otherwise, if `Mx` (e.g. M1 or M2) is mentioned, then download the ARM64 option. 
 
-<a href="https://github.com/CellMigrationLab/Stardist2D/releases/download/1.2.0/StarDist2D-1.2.0-MacOSX-arm64.pkg">
+<a href="https://github.com/CellMigrationLab/Stardist2D/releases/download/1.2.1/StarDist2D-1.2.1-MacOSX-arm64.pkg">
     <img src="https://img.shields.io/badge/Download%20for%20Mac%20(ARM64)-Latest-lightgrey?logo=apple&style=for-the-badge" alt="Download for Mac ARM64" width="250">
 </a>
 
@@ -146,7 +146,7 @@ After installation, you can launch StarDist2D from your Applications folder and 
 > 2. Select About This Mac.
 > 3. A window will pop up displaying your Mac’s information. Look into the `Chip` or `Processor` field. If `Intel` is mentioned, then download the Intel option. Otherwise, if `Mx` (e.g. M1 or M2) is mentioned, then download the ARM64 option. 
 
-<a href="https://github.com/CellMigrationLab/Stardist2D/releases/download/1.2.0/StarDist2D-1.2.0-MacOSX-arm64.sh">
+<a href="https://github.com/CellMigrationLab/Stardist2D/releases/download/1.2.1/StarDist2D-1.2.1-MacOSX-arm64.sh">
     <img src="https://img.shields.io/badge/Download%20for%20Mac%20(ARM64)-Latest-lightgrey?logo=apple&style=for-the-badge" alt="Download for Mac ARM64" width="250">
 </a>
 
@@ -163,7 +163,7 @@ Follow the guidelines shown on the following GIF or the instructions bellow:
 1. Open a terminal on the folder where you downloaded the file.
 2. Copy and paste the following command:
     ```bash
-    bash StarDist2D-1.2.0-MacOSX-ARCHITECTURE.sh
+    bash StarDist2D-1.2.1-MacOSX-ARCHITECTURE.sh
     ```
 3. Click Enter to run the command.
 4. Follow the on-screen prompts to complete the installation.
