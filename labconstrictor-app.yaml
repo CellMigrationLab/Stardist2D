@@ -12,6 +12,15 @@ description: |-
   Please cite StarDist when you use this app: Schmidt U., Weigert M., Broaddus C., Myers G. Cell Detection with Star-Convex Polygons. MICCAI 2018, Lecture Notes in Computer Science 11071, pp. 265-273 (doi:10.1007/978-3-030-00934-2_30). Please also cite ZeroCostDL4Mic, the notebook this app is built on: von Chamier L., Laine R. F. et al. Democratising deep learning for microscopy with ZeroCostDL4Mic. Nature Communications 12, 2276 (2021) (doi:10.1038/s41467-021-22518-0), and LabConstrictor, which packages it (doi:10.48550/arXiv.2603.10704).
 kind: segmentation
 hosts: [notebook, napari, fiji, qupath]
+host_requirements:   # the oldest LabConstrictor plugins this app needs (LabConstrictor-Tools #155)
+  napari:
+    min_version: 0.1.0-alpha.5
+  fiji:
+    min_version: 0.1.0-alpha.7
+    why: progress of long trainings in the Log window
+  qupath:
+    min_version: 0.1.0-alpha.7
+    why: Replace keeps your own annotations
 distribution:
   installer: true
   platforms: [windows-x86_64, macos-arm64, linux-x86_64]
