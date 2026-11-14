@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.2.0] - 2026-11-14
+
+### Changed
+- Version updated from 1.1.2 to 1.2.0
+
+**Commit Details:**
+- Hash: [`46da65a0`](https://github.com/CellMigrationLab/Stardist2D/commit/46da65a0ca9606b89ef9d34283030c711d71c229)
+- Author: guijacquemet
+- Date: 2026-11-14 09:29:44 +0200
+- Message: Merge pull request #11 from CellMigrationLab/claude/stardist-labconstrictor-plan-aizdd6
+
+1.2.0: nine Cell Migration Lab models and the BMZ CHO model in every model list
+
+---
 ## [1.1.2] - 2026-11-14
 
 ### Changed
