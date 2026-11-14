@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
-from stardist2d import metrics, model, predict
+from stardist2d import metrics, model, model_catalogue, predict
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -80,6 +80,14 @@ def load(choice: ModelChoice) -> StarDist2D:
         return _cached_model(resolved.source, folder, _folder_state(folder))
     except FileNotFoundError as problem:
         raise tool_error("invalid_parameter", str(problem)) from None
+    except RuntimeError as problem:  # a pretrained model that could not be downloaded (model.from_registry)
+        raise tool_error("download_failed", str(problem)) from None
+
+
+def _cited(summary: str, choice: ModelChoice) -> str:
+    """Return *summary* with what to cite when the model is a rehosted lab or Model Zoo model (licences ask for it)."""
+    cite = model_catalogue.citation(choice.source)
+    return f"{summary} {cite}." if cite else summary
 
 
 def tool_hooks() -> predict.Hooks:
@@ -171,7 +179,7 @@ def segment(
     table = _objects_table(full, details)
     table["centroid_y"] += offset[0]
     table["centroid_x"] += offset[1]
-    return full, _shapes(details, offset), table, f"Found **{len(table)}** objects."
+    return full, _shapes(details, offset), table, _cited(f"Found **{len(table)}** objects.", choice)
 
 
 def _inside(labels: np.ndarray, details: dict[str, Any], mask: np.ndarray) -> tuple[np.ndarray, dict[str, Any]]:
@@ -203,7 +211,7 @@ def segment_folder(
     except ValueError as problem:
         raise tool_error("invalid_parameter", str(problem)) from None
     table = pd.DataFrame(result.counts, columns=["image", "objects"])
-    return table, f"Segmented **{len(table)}** images into {output_folder}."
+    return table, _cited(f"Segmented **{len(table)}** images into {output_folder}.", choice)
 
 
 def quality_control(
@@ -232,6 +240,7 @@ def quality_control(
     summary = f"F1 **{row['f1 score']:.3f}**, IoU {row['Prediction v. GT Intersection over Union']:.3f}"
     for column, reason in metrics.undefined_values(row):
         summary += f" ({column} undefined: {reason.replace('_', ' ')})"
+    summary = _cited(summary, choice)
     return labels.astype(np.uint16), pd.DataFrame([row]), summary
 
 

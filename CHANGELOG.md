@@ -3,6 +3,27 @@
 StarDist2D is a LabConstrictor port of the ZeroCostDL4Mic StarDist 2D notebook, version 1.20.8.
 Every intentional difference from 1.20.8 is listed here under **Differences from ZeroCostDL4Mic 1.20.8**.
 
+## 1.2.0 (unreleased)
+
+### Added
+- **Ten more pretrained models**, in every model list:
+  - the Fiji, napari and QuPath tools (*Model*; *Start from* in *Train a model*);
+  - the notebook (section 3.4, and a new *Pretrained_model* choice in sections 6.1 and 6.2);
+  - the command line.
+
+  Nine are the Cell Migration Lab's StarDist models, taken unchanged from the model folders of its Zenodo datasets
+  (CC BY 4.0): HUVEC nuclei, fluorescent cells, AsPC1 (Lifeact), MiaPaCa2 (CD44), tumour cell nuclei (DAPI),
+  neutrophils, monocytes, and cancer cells at 20x and 10x (brightfield). The tenth is the BioImage Model Zoo's CHO
+  mitotic rounding model (brightfield, MIT). They are rehosted in `models/` (about 5.3 MB each, instead of
+  100–580 MB per dataset) and registered in StarDist's own registry: downloaded once, checked against their SHA-256,
+  cached like `2D_versatile_fluo`. The summaries and the notebook say what to cite. See `models/README.md`.
+
+### Fixed
+- **A pretrained model that cannot be downloaded or fails its checksum is refused with what to do.** CSBDeep's
+  `from_pretrained` printed a table and returned nothing, which surfaced later as "'NoneType' object has no
+  attribute …". This affected StarDist's own models too, for example offline. The tools report it as
+  `download_failed`.
+
 ## 1.1.2 (unreleased)
 
 Fixes from the first human tests (Windows, notebook and Fiji).

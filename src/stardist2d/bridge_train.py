@@ -20,7 +20,7 @@ from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from stardist2d import config, data, environment, metrics, model, pretrained, provenance, qc, train
+from stardist2d import config, data, environment, metrics, model, model_catalogue, pretrained, provenance, qc, train
 from stardist2d.bridge import tool_error, tool_hooks
 
 if TYPE_CHECKING:
@@ -29,7 +29,14 @@ if TYPE_CHECKING:
 
     from stardist2d.prepare import TrainingSplit
 
-START_CHOICES = ("None", "2D_versatile_fluo", "2D_versatile_he", "2D_paper_dsb2018", "Own model folder")
+START_CHOICES = (
+    "None",
+    "2D_versatile_fluo",
+    "2D_versatile_he",
+    "2D_paper_dsb2018",
+    *(entry.label for entry in model_catalogue.CATALOGUE),
+    "Own model folder",
+)
 """What training can start from: nothing, a StarDist pretrained model, or a model folder (notebook section 3.4)."""
 OWN_MODEL = "Own model folder"
 CPU_NOTE = (
@@ -94,7 +101,9 @@ def start_weights(request: TrainingRequest) -> tuple[Path | None, float | None, 
                 f"started from {folder.name}; {note}",
             )
         source = model.load_model(model.ModelChoice(request.start_from))
-        return Path(source.logdir) / "weights_best.h5", None, f"started from StarDist's {request.start_from}"
+        cite = model_catalogue.citation(request.start_from)
+        note = f"started from {request.start_from}; {cite}" if cite else f"started from StarDist's {request.start_from}"
+        return Path(source.logdir) / "weights_best.h5", None, note
     except FileNotFoundError as problem:
         raise tool_error("invalid_parameter", str(problem)) from None
 

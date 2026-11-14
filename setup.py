@@ -46,7 +46,7 @@ REPOSITORY = os.environ.get("GITHUB_REPOSITORY")
 
 setup(
     name="stardist2d",
-    version="1.1.2",
+    version="1.2.0",
     long_description=read_readme(),
     long_description_content_type="text/markdown",
     project_urls={"Source": f"https://github.com/{REPOSITORY}"} if REPOSITORY else {},

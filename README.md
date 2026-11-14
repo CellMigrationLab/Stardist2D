@@ -38,8 +38,10 @@ if you need speed. A model trained anywhere works everywhere for prediction.
   | Quality control on a folder | section 5 of the notebook for a model you trained: QC table, F1 summary, predictions |
   | Check this installation | memory, disk, GPU and TensorFlow of the app |
 
-  Models: `2D_versatile_fluo`, `2D_versatile_he`, `2D_paper_dsb2018` (downloaded once), or the folder of a model you
-  trained (in the notebook or with *Train a model*).
+  Models: `2D_versatile_fluo`, `2D_versatile_he`, `2D_paper_dsb2018`, nine Cell Migration Lab models (HUVEC nuclei,
+  neutrophils, monocytes, cancer cells, AsPC1, MiaPaCa2, tumour cell nuclei, fluorescent cells) and the BioImage Model
+  Zoo's CHO mitotic rounding model ([models/](models/README.md), downloaded once and checked), or the folder of a model
+  you trained (in the notebook or with *Train a model*). The summary says what to cite for a lab or Model Zoo model.
 
   **Training from Fiji, napari or QuPath.** *Train a model* writes the same model folder as the notebook. Progress is
   shown after every epoch. *Cancel* stops within a batch and keeps what was saved: the best weights so far, the loss
