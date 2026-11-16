@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://labconstrictor.cellmig.org/schema/labconstrictor-app.schema.json
+# yaml-language-server: $schema=https://cellmigrationlab.github.io/LabConstrictor-Site/schema/labconstrictor-app.schema.json
 # The installer bundles this file and passes it to labconstrictor-tools register (--app-manifest): the hosts: line
 # decides where the app's tools (src/stardist2d_lc_tools) are listed.
 schema: 1
